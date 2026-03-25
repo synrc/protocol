@@ -123,7 +123,7 @@ header {
 
 
 .hero-content {
-    max-width: 1280px;
+//    max-width: 1280px;
     margin: 0 auto;
     padding: 0 2rem;
     position: relative;
@@ -233,9 +233,12 @@ h2 {
     grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     gap: 2rem 2.4rem;
     align-items: start;
+    align: center;
 }
 
 .package-card {
+    max-width: 900px;
+    margin: 0 auto;
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 18px;

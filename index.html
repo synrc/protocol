@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMP — Sokhatsky Messenger Protocol</title>
-    <link rel="stylesheet" href="index.css?v=8">
+    <link rel="stylesheet" href="index.css?v=9">
     <style>
         .grid-2 {
             display: grid;
@@ -23,18 +23,17 @@
 <body>
     <nav class="sticky">
         <div class="nav-container">
-            <a href="https://groupoid.space" class="logo"><img width="50" style="margin-bottom:-15px;" src="https://avatars.githubusercontent.com/u/17128096?s=200&v=4"></a>
+            <a href="https://zencrypted.uk" class="logo"><img width="50" style="margin-bottom:-15px;" src="https://openmoji.org/data/color/svg/E248.svg"></a>
             <ul class="nav-links">
-                <li><a href="index.html">Protocol</a></li>
-                <li><a href="https://github.com/synrc/chat">GitHub</a></li>
+                <li><a href="index.html">Sokhatsky Messenger Protocol</a></li>
             </ul>
         </div>
     </nav>
 
     <header>
         <div class="hero-content">
-            <h1>SMP</h1>
-            <p class="hero-subtitle">Sokhatsky Messenger Protocol: A three-layered cryptographic communication suite for serverless, brokered, and document-centric messaging.</p>
+            <h1>Protocol</h1>
+            <p class="hero-subtitle"><b>Sokhatsky Messenger Protocol</b>: A three-layered cryptographic communication suite for serverless, brokered, and document-centric messaging.</p>
         </div>
     </header>
 
@@ -42,36 +41,52 @@
         <section>
             <h2>Abstract</h2>
             <div style="max-width:800px;margin:0 auto;text-align: center;">
-                <p><b>Sokhatsky Messenger Protocol (SMP)</b> is a comprehensive communication framework designed for high-security environments. It spans from low-level serverless UDP multicast to high-level document-centric ERP/1 systems, ensuring reliability through formal ASN.1 specifications and modern cryptographic foundations. SMP is built to satisfy both civilian and military communication requirements, incorporating X.509 PKI and X.400 MHS/IPMS patterns.</p>
+                <p><b>Sokhatsky Messenger Protocol (SMP)</b> is a comprehensive communication framework designed
+                   for high-security environments. It spans from low-level serverless UDP multicast to high-level
+                   document-centric ERP/1 systems, ensuring reliability through formal ASN.1 specifications and
+                   modern cryptographic foundations. SMP is built to satisfy both civilian and military communication
+                   requirements, incorporating X.509 PKI and X.400 MHS/IPMS patterns.</p>
             </div>
         </section>
 
         <section>
-            <h2>MESSAGE-v1.asn1</h2>
+            <h2>MESSAGE</h2>
             <p style="text-align: center; margin-bottom: 2rem;">UDP multicast serverless communication for local area networks.</p>
             <div class="package-card">
                 <h3>V1: Serverless Multicast</h3>
                 <hr>
-                <p>This layer defines the core primitives for peer-to-peer and multi-user communication without the need for a central broker. It uses UDP multicast for discovery and delivery, featuring authority registration and file sharing.</p>
+                <p>This layer <b>MESSAGE-v1.asn1</b> defines the core primitives for peer-to-peer and multi-user communication without the need for a central broker. It uses UDP multicast for discovery and delivery, featuring authority registration and file sharing.</p>
                 <pre class="code-snippet">
 MESSAGE-v1 DEFINITIONS ::= BEGIN
 
     IMPORTS ContentInfo FROM CryptographicMessageSyntax-2009
             Certificate FROM PKIX1Explicit-2009 ;
 
-    OS  ::= ENUMERATED { apple (1), microsoft (2), google (3), ericsson (4), nokia (5), cisco (6) }
+    OS  ::= ENUMERATED { apple (1), microsoft (2), google (3),
+                         ericsson (4), nokia (5), cisco (6) }
+
     P2P ::= SEQUENCE { from OCTET STRING, to OCTET STRING }
     MUC ::= SEQUENCE { room OCTET STRING }
 
     CHATString ::= OCTET STRING
 
-    Feature ::= SEQUENCE { id OCTET STRING, key OCTET STRING, value OCTET STRING, group OCTET STRING }
-    AuthorityMethod ::= ENUMERATED { announce (0), register (1), authenticate (2), dismiss (3), renew (4) }
+    -- 01 Authority (CA)
+
+    Feature ::= SEQUENCE {
+       id OCTET STRING,
+       key OCTET STRING,
+       value OCTET STRING,
+       group OCTET STRING }
+
+    AuthorityMethod ::= ENUMERATED { announce (0), register (1),
+       authenticate (2), dismiss (3), renew (4) }
     Authority ::= SEQUENCE {
        session OCTET STRING,
        type AuthorityMethod,
        cert OCTET STRING,
        settings SEQUENCE OF feature Feature }
+
+    -- 02 Message (CHAT)
 
     File ::= SEQUENCE {
        id OCTET STRING,
@@ -79,6 +94,9 @@ MESSAGE-v1 DEFINITIONS ::= BEGIN
        payload ANY,
        parentid OCTET STRING }
 
+    Channel ::= SEQUENCE { channel OCTET STRING }
+    MessageType ::= ENUMERATED { sys (1), reply (2), forward (3), read (4), edited (5) }
+    MessageStatus ::= ENUMERATED { async (1), delete (2), clear (3), update (4), edit (5) }
     MessageFeed ::= CHOICE { p2p [0] P2P, muc [1] MUC, chan [2] Channel }
     Message ::= SEQUENCE {
        id CHATString,
@@ -88,21 +106,33 @@ MESSAGE-v1 DEFINITIONS ::= BEGIN
        files SEQUENCE OF file File,
        type MessageType,
        link CHOICE { empty [1] NULL, message [2] Message },
+       seenby CHATString,
+       repliedby CHATString,
+       mentioned SEQUENCE OF name CHATString,
        status MessageStatus DEFAULT clear }
 
     Ack ::= SEQUENCE { table OCTET STRING, id OCTET STRING }
+
+    -- 05 Activity (Presense, Typing, Async Messages)
+
+    Activity ::= SEQUENCE {
+       id OCTET STRING,
+       vsn Version,
+       session OCTET STRING,
+       nickname OCTET STRING,
+       comments SEQUENCE OF comment OCTET STRING }
 
 END</pre>
             </div>
         </section>
 
         <section>
-            <h2>CHAT-v2.asn1</h2>
+            <h2>CHAT</h2>
             <p style="text-align: center; margin-bottom: 2rem;">TLS unicast broker and PKI X.509 (ПК КЗІ X.509).</p>
             <div class="package-card">
                 <h3>V2: Brokered TLS & PKI</h3>
                 <hr>
-                <p>The second layer introduces a central broker architecture with TLS encryption. It implements full X.509 PKI support, LDAP-based search, and complex subscription/presence mechanisms for global messaging systems.</p>
+                <p>The second layer <b>CHAT-v2.asn1</b> introduces a central broker architecture with TLS encryption. It implements full X.509 PKI support, LDAP-based search, and complex subscription/presence mechanisms for global messaging systems.</p>
                 <pre class="code-snippet">
 CHAT-v2 DEFINITIONS IMPLICIT TAGS ::= BEGIN
 
@@ -110,27 +140,129 @@ CHAT-v2 DEFINITIONS IMPLICIT TAGS ::= BEGIN
             CertificationRequest FROM PKCS-10
             Certificate FROM PKIX1Explicit-2009 ;
 
-    Version ::= INTEGER  { v0(0), v1(1), v2(2), v3(3) }
-    
-    AuthorityMethod ::= ENUMERATED { announce (0), enroll (1), authenticate (2), revoke (3), renew (4) }
-    Authority ::= SEQUENCE {
-       id OCTET STRING,
-       vsn Version,
-       session OCTET STRING,
-       type AuthorityMethod,
-       cert OCTET STRING,
-       settings SEQUENCE OF feature Feature }
+    -- 06 Inbox Folder Queue (MNESIA, SQLite) /Mail /Chat
 
-    MessageFeed ::= CHOICE { private [1] Privatebox, chan [2] Streambox, mailbox [4] Mailbox, group [8] Groupbox }
-    Message ::= SEQUENCE {
+    Privatebox ::= SEQUENCE { address OCTET STRING } -- /Chat
+    Streambox ::= SEQUENCE { channel OCTET STRING } -- /Stream
+    Groupbox ::= SEQUENCE { channel OCTET STRING } -- /Conference
+    Mailbox ::= SEQUENCE { channel OCTET STRING } -- /Mail
+    InboxMethod ::= ENUMERATED { get (1), erase (2) }
+
+    Inbox ::= SEQUENCE {
        id OCTET STRING,
        vsn Version,
        session OCTET STRING,
-       inbox OCTET STRING,
-       from OCTET STRING,
-       to MessageFeed,
-       type MessageType,
-       status MessageStatus DEFAULT clear }
+       type InboxMethod,
+       feed MessageFeed,
+       messages SEQUENCE OF message Message }
+
+    -- 06 Subscruption (MNESIA, Pub/Sub)
+
+    SubscriptionPresence ::= ENUMERATED { offline (1), online (2) }
+    SubscriptionStatus ::= ENUMERATED { request (1), confirm (2),
+       update (3), ignore (4), ban (5), unban (6) }
+    Subscription ::= SEQUENCE {
+       id OCTET STRING,
+       vsn Version,
+       session OCTET STRING,
+       nickname OCTET STRING,
+       friend OCTET STRING,
+       status SubscriptionPresence,
+       type SubscriptionStatus }
+
+    -- 07 Search (LDAP Search)
+
+    SearchStatus ::= ENUMERATED { ok (0) }
+    Criteria ::= ENUMERATED { equal (0), notequal (1), like (2) }
+    Scope ::= ENUMERATED { profile (0), folder (1), contact (2),
+       member (3), room (4), chat (5), message (6) }
+    Search ::= SEQUENCE {
+       id OCTET STRING,
+       vsn Version,
+       session OCTET STRING,
+       dn OCTET STRING,
+       field OCTET STRING,
+       value OCTET STRING,
+       criteria Criteria,
+       type Scope,
+       status SearchStatus }
+
+    -- 08 Roster (LDAP /People, /Channels, /Topics and /Servers user sub-folders)
+
+    PersonStatus ::= ENUMERATED { req (1), auth (2), ignore (3), internal (4),
+       friend (5), lastmsg (6), ban (7), banned (8), deleted (9), nonexised (10) }
+    Person ::= SEQUENCE {
+       id OCTET STRING,
+       nickname OCTET STRING,
+       avatar OCTET STRING,
+       names SEQUENCE OF name OCTET STRING,
+       phone OCTET STRING,
+       surnames SEQUENCE OF name OCTET STRING,
+       lastmsg Message,
+       presence SubscriptionPresence,
+       update INTEGER,
+       created INTEGER,
+       settings SEQUENCE OF feature Feature,
+       status PersonStatus }
+
+    Server ::= SEQUENCE { service OCTET STRING, port INTEGER, host OCTET STRING }
+    RosterStatus ::= ENUMERATED {
+       get (1), create (2), del (3), remove (4), nick (5), search (6),
+       contact (7), add (8), update (9), list (10), patch (11), lastmsg (12) }
+    Roster ::= SEQUENCE {
+       id OCTET STRING,
+       vsn Version,
+       session OCTET STRING,
+       nickname OCTET STRING,
+       keys SEQUENCE OF key OCTET STRING,
+       people SEQUENCE OF contact Person,
+       topics SEQUENCE OF room Conference,
+       channels SEQUENCE OF room Conference,
+       servers SEQUENCE OF server Server,
+       update INTEGER,
+       status RosterStatus }
+
+    -- 09 Conference (RocksDB, Multi-user Conferences)
+
+    MemberStatus ::= ENUMERATED { admin (1), member (2), removed (3), patch (4), owner (5) }
+    Member ::= SEQUENCE {
+       id OCTET STRING,
+       nickname OCTET STRING,
+       feed MessageFeed,
+       feeds SEQUENCE OF feed OCTET STRING,
+       phone OCTET STRING,
+       avatar OCTET STRING,
+       names SEQUENCE OF name OCTET STRING,
+       surnames SEQUENCE OF name OCTET STRING,
+       alias OCTET STRING,
+       update INTEGER,
+       settings SEQUENCE OF feature Feature,
+       presence SubscriptionPresence,
+       status MemberStatus }
+
+    ConferenceType ::= ENUMERATED { group (1), channel (2), call (3) }
+    ConferenceStatus ::= ENUMERATED { create (1), leave (2), add (3),
+       remove (4), removed (5), join (6), joined (7), info (8), patch (9),
+       get (10), delete (11), lastmsg (12), mute (13), unmute (14) }
+    Conference ::= SEQUENCE {
+       id OCTET STRING,
+       vsn Version,
+       session OCTET STRING,
+       name OCTET STRING,
+       links SEQUENCE OF link OCTET STRING,
+       description OCTET STRING,
+       settings SEQUENCE OF feature Feature,
+       members SEQUENCE OF member Member,
+       admins SEQUENCE OF member Member,
+       data SEQUENCE OF file File,
+       type ConferenceType,
+       tos OCTET STRING,
+       unread INTEGER,
+       mentions SEQUENCE OF contact INTEGER,
+       lastmsg Message,
+       update INTEGER,
+       created INTEGER,
+       status ConferenceStatus }
 
     CHATProtocol ::= CHOICE {
        authority    [1] Authority,
@@ -149,12 +281,12 @@ END</pre>
         </section>
 
         <section>
-            <h2>MAIL-v3.asn1</h2>
-            <p style="text-align: center; margin-bottom: 2rem;">ERP/1: Documents protocol implementing Order №40 MO (Наказ №40 МО).</p>
+            <h2>MAIL</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">ERP/1: Documents protocol implementing Order №40 MoD MHS IPMS Priority Mail.</p>
             <div class="package-card">
                 <h3>V3: Document-Centric MHS/IPMS</h3>
                 <hr>
-                <p>The third layer is an extension of v2, incorporating InterPersonal Messaging Service (IPMS) and Message Handling System (MHS) patterns from X.400. It is tailored for official document flow, implementing strict ERP/1 requirements and the Ministry of Defense Order №40.</p>
+                <p>The third layer <b>MAIL-v3.asn1</b> is an extension of v2, incorporating InterPersonal Messaging Service (IPMS) and Message Handling System (MHS) patterns from X.400. It is tailored for official document flow, implementing strict ERP/1 requirements and the Ministry of Defense Order №40.</p>
                 <pre class="code-snippet">
 MAIL-v3 DEFINITIONS IMPLICIT TAGS ::= BEGIN
 
@@ -248,17 +380,35 @@ send file "order_40.pdf" to alice
 request file "document-id" from bob
 
 # Low level/Raw
-send raw hex "3082..." 
+send raw hex "3082..."
 expect message from alice matching ".*received.*"</pre>
             </div>
         </section>
+
+        </section>
+
+        <section class="section-standards">
+            <h2>Open Source</h2>
+            <center>
+                <a href="https://github.com/synrc/smp">
+                    <img style="width:150px;" src="https://n2o.dev/img/github.svg" alt="GitHub Logo">
+                    </a>
+          <br>
+          <br>
+          <br>
+          <br>
+          <img src="https://openmoji.org/data/color/svg/1F1F8-1F1EA.svg" height=50 style="margin:-00px;padding:0px;">
+          <img src="https://openmoji.org/data/color/svg/1F1FA-1F1E6.svg" height=50 style="margin:-00px;padding:0px;">
+            </center>
+        </section>
+
     </main>
 
     <footer>
         <div class="footer-columns">
             <div>
                 <h4>SMP</h4>
-                <p>Sokhatsky Messenger Protocol implementation by <a rel="me" href="https://github.com/synrc/chat">Synrc Chat Team</a>.</p>
+                <p>Sokhatsky Messenger Protocol implementation by <a rel="me" href="https://github.com/zencrypted">Zen Crypted</a>.</p>
             </div>
             <div>
                 <h4>Resources</h4>
