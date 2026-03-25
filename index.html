@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMP — Sokhatsky Messenger Protocol</title>
+    <link rel="stylesheet" href="index.css?v=8">
+    <style>
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 900px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        .code-snippet {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="sticky">
+        <div class="nav-container">
+            <a href="https://groupoid.space" class="logo"><img width="50" style="margin-bottom:-15px;" src="https://avatars.githubusercontent.com/u/17128096?s=200&v=4"></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Protocol</a></li>
+                <li><a href="https://github.com/synrc/chat">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header>
+        <div class="hero-content">
+            <h1>SMP</h1>
+            <p class="hero-subtitle">Sokhatsky Messenger Protocol: A three-layered cryptographic communication suite for serverless, brokered, and document-centric messaging.</p>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2>Abstract</h2>
+            <div style="max-width:800px;margin:0 auto;text-align: center;">
+                <p><b>Sokhatsky Messenger Protocol (SMP)</b> is a comprehensive communication framework designed for high-security environments. It spans from low-level serverless UDP multicast to high-level document-centric ERP/1 systems, ensuring reliability through formal ASN.1 specifications and modern cryptographic foundations. SMP is built to satisfy both civilian and military communication requirements, incorporating X.509 PKI and X.400 MHS/IPMS patterns.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>MESSAGE-v1.asn</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">UDP multicast serverless communication for local area networks.</p>
+            <div class="package-card">
+                <h3>V1: Serverless Multicast</h3>
+                <hr>
+                <p>This layer defines the core primitives for peer-to-peer and multi-user communication without the need for a central broker. It uses UDP multicast for discovery and delivery, featuring authority registration and file sharing.</p>
+                <pre class="code-snippet">
+MESSAGE-v1 DEFINITIONS ::= BEGIN
+
+    IMPORTS ContentInfo FROM CryptographicMessageSyntax-2009
+            Certificate FROM PKIX1Explicit-2009 ;
+
+    OS  ::= ENUMERATED { apple (1), microsoft (2), google (3), ericsson (4), nokia (5), cisco (6) }
+    P2P ::= SEQUENCE { from OCTET STRING, to OCTET STRING }
+    MUC ::= SEQUENCE { room OCTET STRING }
+
+    CHATString ::= OCTET STRING
+
+    Feature ::= SEQUENCE { id OCTET STRING, key OCTET STRING, value OCTET STRING, group OCTET STRING }
+    AuthorityMethod ::= ENUMERATED { announce (0), register (1), authenticate (2), dismiss (3), renew (4) }
+    Authority ::= SEQUENCE {
+       session OCTET STRING,
+       type AuthorityMethod,
+       cert OCTET STRING,
+       settings SEQUENCE OF feature Feature }
+
+    File ::= SEQUENCE {
+       id OCTET STRING,
+       mime OCTET STRING,
+       payload ANY,
+       parentid OCTET STRING }
+
+    MessageFeed ::= CHOICE { p2p [0] P2P, muc [1] MUC, chan [2] Channel }
+    Message ::= SEQUENCE {
+       id CHATString,
+       feed MessageFeed,
+       from CHATString,
+       to CHATString,
+       files SEQUENCE OF file File,
+       type MessageType,
+       link CHOICE { empty [1] NULL, message [2] Message },
+       status MessageStatus DEFAULT clear }
+
+    Ack ::= SEQUENCE { table OCTET STRING, id OCTET STRING }
+
+END</pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>CHAT-v2.asn1</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">TLS unicast broker and PKI X.509 (ПК КЗІ X.509).</p>
+            <div class="package-card">
+                <h3>V2: Brokered TLS & PKI</h3>
+                <hr>
+                <p>The second layer introduces a central broker architecture with TLS encryption. It implements full X.509 PKI support, LDAP-based search, and complex subscription/presence mechanisms for global messaging systems.</p>
+                <pre class="code-snippet">
+CHAT-v2 DEFINITIONS IMPLICIT TAGS ::= BEGIN
+
+    IMPORTS ContentInfo FROM CryptographicMessageSyntax-2009
+            CertificationRequest FROM PKCS-10
+            Certificate FROM PKIX1Explicit-2009 ;
+
+    Version ::= INTEGER  { v0(0), v1(1), v2(2), v3(3) }
+    
+    AuthorityMethod ::= ENUMERATED { announce (0), enroll (1), authenticate (2), revoke (3), renew (4) }
+    Authority ::= SEQUENCE {
+       id OCTET STRING,
+       vsn Version,
+       session OCTET STRING,
+       type AuthorityMethod,
+       cert OCTET STRING,
+       settings SEQUENCE OF feature Feature }
+
+    MessageFeed ::= CHOICE { private [1] Privatebox, chan [2] Streambox, mailbox [4] Mailbox, group [8] Groupbox }
+    Message ::= SEQUENCE {
+       id OCTET STRING,
+       vsn Version,
+       session OCTET STRING,
+       inbox OCTET STRING,
+       from OCTET STRING,
+       to MessageFeed,
+       type MessageType,
+       status MessageStatus DEFAULT clear }
+
+    CHATProtocol ::= CHOICE {
+       authority    [1] Authority,
+       message      [2] Message,
+       inbox        [3] Inbox,
+       ack          [4] Ack,
+       activity     [5] Activity,
+       subscription [6] Subscription,
+       search       [7] Search,
+       roster       [8] Roster,
+       conference   [9] Conference
+    }
+
+END</pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>MAIL-v3.asn1</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">ERP/1: Documents protocol implementing Order №40 MO (Наказ №40 МО).</p>
+            <div class="package-card">
+                <h3>V3: Document-Centric MHS/IPMS</h3>
+                <hr>
+                <p>The third layer is an extension of v2, incorporating InterPersonal Messaging Service (IPMS) and Message Handling System (MHS) patterns from X.400. It is tailored for official document flow, implementing strict ERP/1 requirements and the Ministry of Defense Order №40.</p>
+                <pre class="code-snippet">
+MAIL-v3 DEFINITIONS IMPLICIT TAGS ::= BEGIN
+
+    IMPORTS CHATProtocol, Message, File FROM CHAT-v2 ;
+
+    --- IPMS/MHS Extension for ERP/1
+
+    IPMSHeading ::= SEQUENCE {
+        originator      OCTET STRING,
+        authorizing     SEQUENCE OF OCTET STRING OPTIONAL,
+        primaryRecipients SEQUENCE OF OCTET STRING,
+        copyRecipients    SEQUENCE OF OCTET STRING OPTIONAL,
+        blindCopyRecipients SEQUENCE OF OCTET STRING OPTIONAL,
+        subject         OCTET STRING,
+        priority        INTEGER,
+        expiryTime      GeneralizedTime OPTIONAL,
+        replyTime       GeneralizedTime OPTIONAL,
+        importance      ENUMERATED { low(0), normal(1), high(2) },
+        sensitivity     ENUMERATED { personal(1), private(2), companyConfidential(3) }
+    }
+
+    DocumentType ::= ENUMERATED { draft(0), official(1), signed(2), archived(3) }
+
+    Order40Metadata ::= SEQUENCE {
+        documentId      OCTET STRING,
+        controlDate     GeneralizedTime,
+        executor        OCTET STRING,
+        signature       OCTET STRING,
+        regulatoryAct   OCTET STRING -- Order №40 MO
+    }
+
+    MailMessage ::= SEQUENCE {
+        heading IPMSHeading,
+        body    SEQUENCE OF CHOICE { 
+            text [0] OCTET STRING, 
+            doc  [1] DocumentContent 
+        },
+        meta    Order40Metadata 
+    }
+
+    DocumentContent ::= SEQUENCE {
+        vsn     INTEGER,
+        type    DocumentType,
+        content ANY,
+        files   SEQUENCE OF File
+    }
+
+END</pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>SMP Testing DSL</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">Domain Specific Language for testing and scripting SMP interactions.</p>
+            <div class="package-card" style="grid-column: span 1;">
+                <h3>DSL Session</h3>
+                <hr>
+                <p>The console testing DSL allows for rapid prototyping and validation of protocol flows, from simple P2P messages to complex document submissions.</p>
+                <pre class="code-snippet">
+# SMP Testing Session
+connect user@domain.com
+auth password "secret"
+login cert "path/to/cert.der"
+
+# Presence
+set presence online "Available"
+send presence to alice subscribed
+
+# Messages
+send message to alice "Hello there!"
+send message to room:general "Hi everyone" reply-to "msg-id-123"
+
+# Rich message
+send message {
+  to: alice
+  subject: "ERP/1 Document Draft"
+  body: "Please review the attached Order 40 document."
+  priority: high
+}
+
+# Acknowledgements
+send ack for "msg-id-123"
+send read for "msg-id-xyz"
+
+# Group Chat
+join room general
+invite user bob to room general
+
+# File Transfers
+send file "order_40.pdf" to alice
+request file "document-id" from bob
+
+# Low level/Raw
+send raw hex "3082..." 
+expect message from alice matching ".*received.*"</pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-columns">
+            <div>
+                <h4>SMP</h4>
+                <p>Sokhatsky Messenger Protocol implementation by <a rel="me" href="https://github.com/synrc/chat">Synrc Chat Team</a>.</p>
+            </div>
+            <div>
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://github.com/synrc/chat">Reference Implementation</a></li>
+                    <li><a href="https://github.com/zencrypted/console">Testing Console</a></li>
+                    <li><a href="https://tonpa.guru/stream/2023/2023-08-07%20CHAT%20ASN.1.htm">CHAT ASN.1 Specification</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
