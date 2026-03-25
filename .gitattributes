@@ -1,4 +1,6 @@
 Makefile linguist-detectable=false
+*.asn1 linguist-detectable=true
+*.asn1 linguist-language=ASN.1
 *.js linguist-detectable=false
 *.css linguist-detectable=false
 *.scss linguist-detectable=false
