@@ -523,3 +523,67 @@ footer {
     .library-index { padding: 2.5rem 1rem 5rem; }
     .library-index h1 { margin-bottom: 3.2rem; font-size: clamp(2.6rem, 9vw, 4rem); }
 }
+
+/* GRID & PROTOCOL DOCUMENTATION */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    align-items: start;
+}
+
+.grid-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+@media (max-width: 1000px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+}
+
+.grid-2 h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--accent-dark);
+    font-size: 1.2rem;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 0.4rem;
+}
+
+.grid-2 div>p {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+    font-size: 0.95rem;
+}
+
+.grid-2 ul {
+    margin-bottom: 2rem;
+    padding-left: 1.25rem !important;
+    list-style-type: none !important;
+}
+
+.grid-2 li {
+    margin-bottom: 0.6rem !important;
+    padding-left: 0;
+    line-height: 1.5;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grid-2 li b {
+    color: var(--accent);
+    margin-right: 0.3rem;
+}
+
+.protocol-card {
+    max-width: 1200px !important;
+    width: 95%;
+}
