@@ -1,5 +1,5 @@
 --- Протокол Месенжера Сохацького v2 для паб-саб брокерів на TLS
---- https://tonpa.guru/stream/2023/2023-08-07 CHAT ASN.1.htm
+--- https://tonpa.guru/stream/2023/2023-08-07%20CHAT%20ASN.1.htm
 
 CHAT-L2 DEFINITIONS IMPLICIT TAGS ::=
 BEGIN
@@ -60,8 +60,8 @@ BEGIN
        payload ContentInfo,
        type MessageType OPTIONAL,
        link Binary OPTIONAL,
-       files SEQUENCE OF file File OPTIONAL,
-       mentioned SEQUENCE OF name Binary OPTIONAL,
+       files [0] SEQUENCE OF file File OPTIONAL,
+       mentioned [1] SEQUENCE OF name Binary OPTIONAL,
        ...
     }
 
@@ -80,7 +80,7 @@ BEGIN
        session OCTET STRING,
        type InboxMethod,
        feed MessageFeed,
-       messages SEQUENCE OF message Message OPTIONAL,
+       messages [0] SEQUENCE OF message Message OPTIONAL,
         ... }
 
     InboxOp ::= ENUMERATED {
@@ -91,9 +91,9 @@ BEGIN
 
     -- get/erase працюють у межах конкретного feed
     -- для обох операцій feed очікується
-    InboxQueryRequest ::= SEQUENCE {
+    InboxQuery ::= SEQUENCE {
        op    InboxOp,
-       feed  MessageFeed OPTIONAL,
+       feed  [0] MessageFeed OPTIONAL,
        ...
     }
 
@@ -102,8 +102,8 @@ BEGIN
     }
 
     -- result повертає набір елементів inbox для feed (може бути пустим)
-    InboxQueryResult ::= SEQUENCE {
-       items SEQUENCE OF item InboxItem OPTIONAL,
+    InboxAnswer ::= SEQUENCE {
+       items [0] SEQUENCE OF item InboxItem OPTIONAL,
        ...
     }
 
@@ -123,10 +123,10 @@ BEGIN
 
     MessageEvent ::= SEQUENCE {
        type       MessageEventType,
-       messageId  OCTET STRING OPTIONAL,
-       feed       MessageFeed OPTIONAL,
-       actor      OCTET STRING OPTIONAL,
-       timestamp  INTEGER OPTIONAL,
+       messageId  [0] OCTET STRING OPTIONAL,
+       feed       [1] MessageFeed OPTIONAL,
+       actor      [2] OCTET STRING OPTIONAL,
+       timestamp  [3] INTEGER OPTIONAL,
        ...
     }
 
@@ -137,9 +137,9 @@ BEGIN
 
     PresenceEvent ::= SEQUENCE {
        type       PresenceEventType,
-       feed       MessageFeed OPTIONAL,
-       actor      OCTET STRING OPTIONAL,
-       timestamp  INTEGER OPTIONAL,
+       feed       [0] MessageFeed OPTIONAL,
+       actor      [1] OCTET STRING OPTIONAL,
+       timestamp  [2] INTEGER OPTIONAL,
        ...
     }
 
@@ -175,11 +175,11 @@ BEGIN
 
        queryType QueryType,
 
-       refId OCTET STRING OPTIONAL, -- request correlation id
-       feed MessageFeed OPTIONAL,
-       target OCTET STRING OPTIONAL, -- optional routing hint; domain target belongs in payload
-       payload QueryPayload OPTIONAL, -- typed query family payload
-       code INTEGER OPTIONAL,
+       refId [0] OCTET STRING OPTIONAL, -- request correlation id
+       feed [1] MessageFeed OPTIONAL,
+       target [2] OCTET STRING OPTIONAL, -- optional routing hint; domain target belongs in payload
+       payload [3] QueryPayload OPTIONAL, -- typed query family payload
+       code [4] INTEGER OPTIONAL,
        ...
     }
 
@@ -198,6 +198,10 @@ BEGIN
        mail         [12] MailExtension, -- X.420
        ...
     }
+
+    ProcessExtension ::= CHOICE { request [1] OCTET STRING, result [2] OCTET STRING }
+    StorageExtension ::= CHOICE { request [1] OCTET STRING, result [2] OCTET STRING }
+    MailExtension    ::= CHOICE { request [1] OCTET STRING, result [2] OCTET STRING }
 
     SubscriptionCore ::= CHOICE {
        request [1] SubscriptionQuery,
@@ -219,7 +223,7 @@ BEGIN
        result  [2] MemberAnswer
     }
 
-    InboxCore ::= CHOICE {
+    InboxExtension ::= CHOICE {
        request [1] InboxQuery,
        result  [2] InboxAnswer
     }
@@ -240,25 +244,25 @@ BEGIN
     -- list допускає частковий фільтр або перегляд у межах scope/dn
     SearchQuery ::= SEQUENCE {
        op       SearchOp,
-       dn       OCTET STRING OPTIONAL,
-       field    OCTET STRING OPTIONAL,
-       value    OCTET STRING OPTIONAL,
-       criteria Criteria OPTIONAL,
-       type     Scope OPTIONAL,
+       dn       [0] OCTET STRING OPTIONAL,
+       field    [1] OCTET STRING OPTIONAL,
+       value    [2] OCTET STRING OPTIONAL,
+       criteria [3] Criteria OPTIONAL,
+       type     [4] Scope OPTIONAL,
        ...
     }
 
     SearchItem ::= SEQUENCE {
-       dn       OCTET STRING OPTIONAL,
-       field    OCTET STRING OPTIONAL,
-       value    OCTET STRING OPTIONAL,
-       criteria Criteria OPTIONAL,
-       type     Scope OPTIONAL
+       dn       [0] OCTET STRING OPTIONAL,
+       field    [1] OCTET STRING OPTIONAL,
+       value    [2] OCTET STRING OPTIONAL,
+       criteria [3] Criteria OPTIONAL,
+       type     [4] Scope OPTIONAL
     }
 
     -- result повертає список знайдених елементів (може бути пустим)
     SearchAnswer ::= SEQUENCE {
-       items SEQUENCE OF item SearchItem OPTIONAL,
+       items [0] SEQUENCE OF item SearchItem OPTIONAL,
        ...
     }
 
@@ -301,8 +305,8 @@ BEGIN
     -- list допускає частковий фільтр
     SubscriptionQuery ::= SEQUENCE {
        op     SubscriptionOp,
-       actor  Binary OPTIONAL,
-       target Binary OPTIONAL,
+       actor  [0] Binary OPTIONAL,
+       target [1] Binary OPTIONAL,
        ...
     }
 
@@ -317,8 +321,8 @@ BEGIN
     -- get/create/remove зазвичай повертають item
     -- list повертає items
     SubscriptionAnswer ::= SEQUENCE {
-       item   Subscription OPTIONAL,
-       items  SEQUENCE OF subscription Subscription OPTIONAL,
+       item   [0] Subscription OPTIONAL,
+       items  [1] SEQUENCE OF subscription Subscription OPTIONAL,
        ...
     }
 
@@ -339,8 +343,8 @@ BEGIN
     -- feed задає контекст (якщо presence залежить від feed)
     PresenceQuery ::= SEQUENCE {
        op     PresenceOp,
-       actor  OCTET STRING OPTIONAL,
-       feed   MessageFeed OPTIONAL,
+       actor  [0] OCTET STRING OPTIONAL,
+       feed   [1] MessageFeed OPTIONAL,
        ...
     }
 
@@ -352,8 +356,8 @@ BEGIN
     -- get зазвичай повертає item
     -- list повертає items (може бути пустим)
     PresenceAnswer ::= SEQUENCE {
-       item   PresenceItem OPTIONAL,
-       items  SEQUENCE OF item PresenceItem OPTIONAL,
+       item   [0] PresenceItem OPTIONAL,
+       items  [1] SEQUENCE OF item PresenceItem OPTIONAL,
        ...
     }
 
@@ -399,8 +403,8 @@ BEGIN
     PersonQuery ::= SEQUENCE {
        op   PersonOp,
 
-       id   OCTET STRING OPTIONAL,
-       name OCTET STRING OPTIONAL,
+       id   [0] OCTET STRING OPTIONAL,
+       name [1] OCTET STRING OPTIONAL,
        ...
     }
 
@@ -415,8 +419,8 @@ BEGIN
     -- list повертає items
 
     PersonAnswer ::= SEQUENCE {
-       item   PersonItem OPTIONAL,
-       items  SEQUENCE OF item PersonItem OPTIONAL,
+       item   [0] PersonItem OPTIONAL,
+       items  [1] SEQUENCE OF item PersonItem OPTIONAL,
        ...
     }
 
@@ -460,8 +464,8 @@ BEGIN
 
     RosterQuery ::= SEQUENCE {
        op   RosterOp,
-       id   OCTET STRING OPTIONAL,
-       name OCTET STRING OPTIONAL,
+       id   [0] OCTET STRING OPTIONAL,
+       name [1] OCTET STRING OPTIONAL,
        ...
     }
 
@@ -475,8 +479,8 @@ BEGIN
     -- list повертає items
 
     RosterAnswer ::= SEQUENCE {
-       item   RosterItem OPTIONAL,
-       items  SEQUENCE OF item RosterItem OPTIONAL,
+       item   [0] RosterItem OPTIONAL,
+       items  [1] SEQUENCE OF item RosterItem OPTIONAL,
        ...
     }
 
@@ -496,8 +500,8 @@ BEGIN
 
     ModerationQuery ::= SEQUENCE {
        op     ModerationOp,
-       actor  OCTET STRING OPTIONAL,
-       target OCTET STRING OPTIONAL,
+       actor  [0] OCTET STRING OPTIONAL,
+       target [1] OCTET STRING OPTIONAL,
        ...
     }
 
@@ -510,8 +514,8 @@ BEGIN
     -- list повертає items
 
     ModerationAnswer ::= SEQUENCE {
-       item   ModerationItem OPTIONAL,
-       items  SEQUENCE OF item ModerationItem OPTIONAL,
+       item   [0] ModerationItem OPTIONAL,
+       items  [1] SEQUENCE OF item ModerationItem OPTIONAL,
        ...
     }
 
@@ -561,8 +565,8 @@ BEGIN
     MemberQuery ::= SEQUENCE {
        op    MemberOp,
 
-       actor OCTET STRING OPTIONAL,
-       feed  MessageFeed OPTIONAL
+       actor [0] OCTET STRING OPTIONAL,
+       feed  [1] MessageFeed OPTIONAL
     }
 
     MemberItem ::= SEQUENCE {
@@ -576,8 +580,8 @@ BEGIN
     -- list повертає items
 
     MemberAnswer ::= SEQUENCE {
-       item   MemberItem OPTIONAL,
-       items  SEQUENCE OF item MemberItem OPTIONAL
+       item   [0] MemberItem OPTIONAL,
+       items  [1] SEQUENCE OF item MemberItem OPTIONAL
     }
 
     ConferenceType ::= ENUMERATED { group (1), channel (2), call (3) }
@@ -632,9 +636,9 @@ BEGIN
 
     ConferenceQuery ::= SEQUENCE {
        op    ConferenceOp,
-       id    OCTET STRING OPTIONAL,
-       name  OCTET STRING OPTIONAL,
-       type  ConferenceType OPTIONAL,
+       id    [0] OCTET STRING OPTIONAL,
+       name  [1] OCTET STRING OPTIONAL,
+       type  [2] ConferenceType OPTIONAL,
        ...
     }
 
@@ -642,8 +646,8 @@ BEGIN
     -- list повертає items
 
     ConferenceAnswer ::= SEQUENCE {
-       item   ConferenceItem OPTIONAL,
-       items  SEQUENCE OF item ConferenceItem OPTIONAL,
+       item   [0] ConferenceItem OPTIONAL,
+       items  [1] SEQUENCE OF item ConferenceItem OPTIONAL,
        ...
     }
 
