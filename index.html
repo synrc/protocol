@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMP — Sokhatsky Messenger Protocol</title>
+    <title>Buddha Protocol</title>
     <link rel="stylesheet" href="index.css?v=11">
 </head>
 
@@ -14,15 +14,15 @@
             <a href="https://zencrypted.uk" class="logo"><img width="50" style="margin-bottom:-15px;"
                     src="https://openmoji.org/data/color/svg/E248.svg"></a>
             <ul class="nav-links">
-                <li><a href="index.html">Sokhatsky Messenger Protocol</a></li>
+                <li><a href="index.html">Buddha Protocol</a></li>
             </ul>
         </div>
     </nav>
 
     <header>
         <div class="hero-content">
-            <h1>SMP.N2O</h1>
-            <p class="hero-subtitle"><b>Sokhatsky Messenger Protocol</b>: A three-layered cryptographic communication
+            <h1>BUDDHA</h1>
+            <p class="hero-subtitle"><b>Buddha Protocol</b>: A three-layered cryptographic communication
                 suite for serverless, brokered, and document-centric messaging.</p>
         </div>
     </header>
@@ -31,10 +31,10 @@
         <section>
             <h2>Abstract</h2>
             <div style="max-width:800px;margin:0 auto;text-align: center;">
-                <p><b>Sokhatsky Messenger Protocol (SMP)</b> is a comprehensive communication ASN.1 framework designed
+                <p><b>Buddha Protocol</b> (BUDDHA) is a comprehensive communication ASN.1 framework designed
                     for high-security environments. It spans from low-level tactical serverless UDP multicast to high-level
                     document-centric ERP/1 systems, ensuring reliability through formal ASN.1 specifications and
-                    modern cryptographic foundations. SMP is built to satisfy both civilian and military communication
+                    modern cryptographic foundations. BUDDHA is built to satisfy both civilian and military communication
                     requirements, incorporating X.509 PKI and X.400 MHS/IPMS patterns.</p>
             </div>
         </section>
@@ -189,7 +189,7 @@ Message ::= SEQUENCE {
                             <h4>3 Event</h4>
                             <p>Event is an abstraction for server-directed push messages.</p>
                             <h5>3.1 Event</h5>
-                            <p>In ASN.1 SMP Core there could be only Message or Presence Events.</p>
+                            <p>In ASN.1 BUDDHA Core there could be only Message or Presence Events.</p>
                             <pre class="code-snippet">
 Event ::= SEQUENCE {
    id OCTET STRING,
@@ -626,8 +626,8 @@ END</pre>
         </section>
 
         <section>
-            <h2>SMP Testing DSL</h2>
-            <p style="text-align: center; margin-bottom: 2rem;">Domain Specific Language for testing and scripting SMP
+            <h2>BUDDHA Testing DSL</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">Domain Specific Language for testing and scripting BUDDHA
                 interactions.</p>
             <div class="package-card" style="grid-column: span 1;">
                 <h3>DSL Session</h3>
@@ -635,7 +635,7 @@ END</pre>
                 <p>The console testing DSL allows for rapid prototyping and validation of protocol flows, from simple
                     P2P messages to complex document submissions.</p>
                 <pre class="code-snippet">
-# SMP Testing Session
+# BUDDHA Testing Session
 connect user@domain.com
 auth password "secret"
 login cert "path/to/cert.der"
@@ -705,13 +705,13 @@ expect message from alice matching ".*received.*"</pre>
             <div>
                 <h4>Publications</h4>
                 <ul>
-                    <li><a href="https://n2o.dev/pro/index.html">Namdak Tonpa. N2O PRO Protocol (2020)</a></li>
+                    <li><a href="https://n2o.dev/pro/index.html">Namdak Tonpa. N2O Pro Protocol (2020)</a></li>
                     <li><a href="https://tonpa.guru/stream/2023/2023-08-07%20CHAT%20ASN.1.htm">Namdak Tonpa. CHAT ASN.1 Protocol (2023)</a></li>
                     <li><a href="https://tonpa.guru/stream/2023/2023-08-08%20ASN.1%20Компілятор.htm">Namdak Tonpa. ASN.1 Compiler X.680 (2023)</a></li>
                     <li><a href="https://github.com/zencrypted/console">Namdak Tonpa. Testing Framework Z.161 (2026)</a> </li>
                     <li><a href="https://zencrypted.github.io/x509.chat/bdfl.pdf">Namdak Tonpa. BDFL Cathedral (2026)</a></li>
                     <li><a href="https://zencrypted.github.io/x509.chat/encryption.pdf">Namdak Tonpa. Encryption Architecture (2026)</a></li>
-                    <li><a href="https://smp.n2o.dev/">Namdak Tonpa. N2O SMP Protocol (2026)</a></li>
+                    <li><a href="https://smp.n2o.dev/">Namdak Tonpa. N2O Buddha Protocol (2026)</a></li>
                     <li><a href="https://github.com/synrc/chat">Namdak Tonpa. X.509 Reference Implementation (2026)</a> </li>
                 </ul>
             </div>
