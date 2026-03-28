@@ -1,5 +1,5 @@
-Buddha Protocol
-===============
+Zen Crypted Buddha Protocol
+===========================
 
 <b>Buddha Protocol</b> (BUDDHA) is a comprehensive communication ASN.1 framework designed
 for high-security environments. It spans from low-level tactical serverless UDP multicast to high-level
