@@ -1,4 +1,4 @@
-MAIL-v3 DEFINITIONS IMPLICIT TAGS ::=
+MAIL-L3 DEFINITIONS IMPLICIT TAGS ::=
 BEGIN
 
 -- Consolidated X.420 minimal set for Sokhatsky Messenger Protocol (MAIL-v3)
