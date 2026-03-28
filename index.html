@@ -52,7 +52,9 @@
 
                 <div class="grid-col">
                         <div>
-                            <h4>00 Basic</h4>
+                            <h4> 0 Basic</h4>
+
+                            <h5> 0.1 Types</h5>
                             <pre class="code-snippet">
 Version ::= INTEGER { v0(0), v1(1), v2(2), v3(3) }
 Flavour ::= ENUMERATED { apple(1), microsoft(2), google(3),
@@ -64,7 +66,8 @@ Flavour ::= ENUMERATED { apple(1), microsoft(2), google(3),
                         </div>
 
                         <div>
-                            <h4>01 Authority</h4>
+                            <h4>1 Authority</h4>
+                            <h5>1.1 Server Controlled ABAC Feature</h5>
                             <pre class="code-snippet">
 Feature ::= SEQUENCE {
    id OCTET STRING,
@@ -77,6 +80,7 @@ Feature ::= SEQUENCE {
                                 <li><b>value</b>: Current operational parameter.</li>
                                 <li><b>group</b>: Categorical domain isolation.</li>
                             </ul>
+                            <h5>1.2 Auhthority Method</h5>
                             <pre class="code-snippet">
 AuthorityMethod ::= ENUMERATED { announce(0), enroll(1),
    authenticate(2), revoke(3), renew(4), ... }</pre>
@@ -87,6 +91,7 @@ AuthorityMethod ::= ENUMERATED { announce(0), enroll(1),
                                 <li><b>revoke</b>: Decommissioning of credentials.</li>
                                 <li><b>renew</b>: Extension of validity for certificates.</li>
                             </ul>
+                            <h5>1.2 CA Authority Announcement</h5>
                             <pre class="code-snippet">
 Authority ::= SEQUENCE {
    id OCTET STRING,
@@ -106,7 +111,13 @@ Authority ::= SEQUENCE {
                         </div>
 
                         <div>
-                            <h4>02 Message</h4>
+                            <h4>2 Message</h4>
+                            <p>Message is main object in the system and main table in the MNESIA database.
+                               Once Message is delivered (Acknowledgment Event Received) — it is physically
+                               deleted from server.</p>
+
+                            <h5>2.1 Message Type</h5>
+
                             <pre class="code-snippet">
 MessageType ::= ENUMERATED { normal(0), sys(1),
    reply(2), forward(3), ... }</pre>
@@ -116,6 +127,9 @@ MessageType ::= ENUMERATED { normal(0), sys(1),
                                 <li><b>reply</b>: Message tied to thread context.</li>
                                 <li><b>forward</b>: Relayed content preserving context.</li>
                             </ul>
+
+                            <h5>2.2 Message Feed</h5>
+
                             <pre class="code-snippet">
 MessageFeed ::= CHOICE { private [1] Privatebox,
    chan [2] Streambox, mailbox [4] Mailbox,
@@ -126,16 +140,20 @@ MessageFeed ::= CHOICE { private [1] Privatebox,
                                 <li><b>mailbox</b>: Document-oriented priority delivery system.</li>
                                 <li><b>group</b>: Context for multi-user conference.</li>
                             </ul>
+
+                            <h5>2.3 Message</h5>
+
+                            <p>If Message.payload is not present then Message.files should be taken and vice versa.</p>
                             <pre class="code-snippet">
 Message ::= SEQUENCE {
    id OCTET STRING,
    vsn Version,
    session OCTET STRING,
    feed MessageFeed,
-   payload ContentInfo,
+   payload ContentInfo OPTIONAL,
    type MessageType OPTIONAL,
    linkId OCTET STRING OPTIONAL,
-   files SEQUENCE OF fileId OCTET STRING OPTIONAL,
+   files SEQUENCE OF file File OPTIONAL,
    mentioned SEQUENCE OF name OCTET STRING OPTIONAL, ... }</pre>
                             <ul>
                                 <li><b>id</b>: Unique identifier for tracking.</li>
@@ -148,10 +166,47 @@ Message ::= SEQUENCE {
                                 <li><b>files</b>: Identifiers for binary attachments.</li>
                                 <li><b>mentioned</b>: Tagged entities for notification.</li>
                             </ul>
+
+                            <h5>2.4 File</h5>
+
+                            <pre class="code-snippet">
+    File ::= SEQUENCE {
+       id OCTET STRING,
+       mime OCTET STRING,
+       payload ANY,
+       parentid OCTET STRING }</pre>
+
+                            <ul>
+                                <li><b>id</b>: Packet id</li>
+                                <li><b>mime</b>: RFC MIME content tagging.</li>
+                                <li><b>payload</b>: CMS ContentInfo.</li>
+                                <li><b>parentid</b>: Link to parent block.</li>
+                            </ul>
+
+
+
                         </div>
 
                         <div>
-                            <h4>03 Event</h4>
+                            <h4>3 Event</h4>
+                            <h5>3.1 Event</h5>
+                            <pre class="code-snippet">
+EventPayload ::= CHOICE {
+   message   [1] MessageEvent,
+   presence  [2] PresenceEvent }
+
+Event ::= SEQUENCE {
+   id OCTET STRING,
+   vsn Version,
+   session OCTET STRING,
+   payload EventPayload, ... }</pre>
+                            <ul>
+                                <li><b>id</b>: Unique event sequence ID.</li>
+                                <li><b>vsn</b>: Protocol version for encoding.</li>
+                                <li><b>session</b>: Network session context.</li>
+                                <li><b>payload</b>: Message or Presence content.</li>
+                            </ul>
+                            <h5>3.1 Message Event Type</h5>
                             <pre class="code-snippet">
 MessageEventType ::= ENUMERATED { received(1),
    delivered(2), read(3), edited(4), deleted(5),
@@ -163,6 +218,7 @@ MessageEventType ::= ENUMERATED { received(1),
                                 <li><b>edited</b>: Original content was modified.</li>
                                 <li><b>deleted</b>: Remove message from storage.</li>
                             </ul>
+                            <h5>3.1 Message Event</h5>
                             <pre class="code-snippet">
 MessageEvent ::= SEQUENCE {
    type MessageEventType,
@@ -177,6 +233,8 @@ MessageEvent ::= SEQUENCE {
                                 <li><b>actor</b>: Entity that triggered the event.</li>
                                 <li><b>timestamp</b>: Precise UTC time of event.</li>
                             </ul>
+
+                            <h5>3.1 Presence Event Type</h5>
                             <pre class="code-snippet">
 PresenceEventType ::= ENUMERATED { online(1),
    offline(2), typing(3), ... }</pre>
@@ -185,6 +243,7 @@ PresenceEventType ::= ENUMERATED { online(1),
                                 <li><b>offline</b>: No longer reachable.</li>
                                 <li><b>typing</b>: Content composition indicator.</li>
                             </ul>
+                            <h5>3.1 Presence Event</h5>
                             <pre class="code-snippet">
 PresenceEvent ::= SEQUENCE {
    type PresenceEventType,
@@ -197,18 +256,6 @@ PresenceEvent ::= SEQUENCE {
                                 <li><b>actor</b>: Entity with state change.</li>
                                 <li><b>timestamp</b>: Time of presence update.</li>
                             </ul>
-                            <pre class="code-snippet">
-Event ::= SEQUENCE {
-   id OCTET STRING,
-   vsn Version,
-   session OCTET STRING,
-   payload EventPayload, ... }</pre>
-                            <ul>
-                                <li><b>id</b>: Unique event sequence ID.</li>
-                                <li><b>vsn</b>: Protocol version for encoding.</li>
-                                <li><b>session</b>: Network session context.</li>
-                                <li><b>payload</b>: Message or Presence content.</li>
-                            </ul>
                         </div>
                 </div>
             </div>
@@ -216,8 +263,7 @@ Event ::= SEQUENCE {
 
         <section>
             <h2>CHAT X.509</h2>
-            <p style="text-align: center; margin-bottom: 2rem;">TLS unicast broker and PKI X.509 infrastructure (ПК КЗІ
-                X.509).</p>
+            <p style="text-align: center; margin-bottom: 2rem;">TLS unicast broker and PKI X.509 infrastructure (ПК КЗІ X.509).</p>
             <div class="package-card protocol-card">
                 <h3>V2: Brokered TLS & PKI</h3>
                 <hr>
@@ -229,16 +275,20 @@ Event ::= SEQUENCE {
                     <!-- Left Column -->
                     <div class="grid-col">
                         <div>
-                            <h4>05 Query Layer</h4>
+                            <h4>4 Query</h4>
+                            <p>Query Layer provides nessesary RPC-like calls for CHAT infrastructure.</p>
+                            <h5>4.1 Query Type</h5>
+                            <p>Queries could be setters and getters, replies could be OK or ERROR.</p>
                             <pre class="code-snippet">
 QueryType ::= ENUMERATED { get(1), set(2),
-   result(3), error(4), ... }</pre>
+   ok(3), error(4), ... }</pre>
                             <ul>
                                 <li><b>get</b>: Request for state from server.</li>
                                 <li><b>set</b>: Directive to modify server state.</li>
-                                <li><b>result</b>: Response with requested data.</li>
+                                <li><b>ok</b>: Response with requested data.</li>
                                 <li><b>error</b>: Report of operation failure.</li>
                             </ul>
+                            <h5>4.2 Query</h5>
                             <pre class="code-snippet">
 Query ::= SEQUENCE {
    id OCTET STRING,
@@ -279,7 +329,7 @@ Query ::= SEQUENCE {
                         </div>
 
                         <div>
-                            <h4>04 Inbox</h4>
+                            <h4>8 Inbox</h4>
                             <pre class="code-snippet">
 InboxOp ::= ENUMERATED { get(1), erase(2), ... }</pre>
                             <ul>
@@ -303,7 +353,7 @@ InboxQueryResult ::= SEQUENCE {
                         </div>
 
                         <div>
-                            <h4>07 Subscription</h4>
+                            <h4>10 Subscription</h4>
                             <pre class="code-snippet">
 Subscription ::= SEQUENCE {
    actor OCTET STRING,
@@ -324,7 +374,7 @@ SubscriptionOp ::= ENUMERATED { get(1), list(2),
                         </div>
 
                         <div>
-                            <h4>09 Roster</h4>
+                            <h4>11 Roster</h4>
                             <pre class="code-snippet">
 Roster ::= SEQUENCE {
    id OCTET STRING,
@@ -358,7 +408,7 @@ Roster ::= SEQUENCE {
                     <div class="grid-col">
 
                         <div>
-                            <h4>08 Presence & Person</h4>
+                            <h4>5 Presence & Person</h4>
                             <pre class="code-snippet">
 Presence ::= ENUMERATED { offline(1), online(2), ... }</pre>
                             <ul>
@@ -394,7 +444,7 @@ Person ::= SEQUENCE {
                         </div>
 
                         <div>
-                            <h4>10 Moderation</h4>
+                            <h4>6 Moderation</h4>
                             <pre class="code-snippet">
 ModerationQueryRequest ::= SEQUENCE {
    op ModerationOp,
@@ -409,7 +459,7 @@ ModerationQueryRequest ::= SEQUENCE {
 
                         <div>
 
-                            <h4>07 Directory Search</h4>
+                            <h4>7 Directory Search</h4>
                             <pre class="code-snippet">
 SearchQueryResult ::= SEQUENCE {
    items SEQUENCE OF item SearchItem OPTIONAL, ... }</pre>
@@ -420,7 +470,7 @@ SearchQueryResult ::= SEQUENCE {
 
 
                         <div>
-                            <h4>11 Conference</h4>
+                            <h4>9 Conference</h4>
                             <pre class="code-snippet">
 Member ::= SEQUENCE {
    id OCTET STRING,
@@ -478,7 +528,7 @@ Conference ::= SEQUENCE {
                         </div>
 
                         <div>
-                            <h4>12 Protocol</h4>
+                            <h4>12 Protocol Envelope</h4>
                             <pre class="code-snippet">
 CHATProtocol ::= CHOICE {
    authority [1] Authority,

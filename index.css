@@ -555,10 +555,17 @@ h4 {
     padding-bottom: 0.4rem;
 }
 
+h5 {
+    margin-top: 20px;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 0.4rem;
+}
+
 .grid-2 div>p {
     margin-top: 1rem;
     margin-bottom: 0.5rem;
-    font-style: italic;
     font-size: 0.95rem;
 }
 
