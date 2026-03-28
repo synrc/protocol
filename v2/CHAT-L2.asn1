@@ -184,12 +184,12 @@ BEGIN
     }
 
     QueryPayload ::= CHOICE {
-       presence     [1] PresenceCore,
-       subscription [2] SubscriptionCore,
+       subscription [1] SubscriptionCore,
+       presence     [2] PresenceCore,
        person       [3] PersonCore,
        roster       [4] RosterCore,
-       member       [5] MemberCore,
-       conference   [6] ConferenceCore,
+       member       [5] MemberExtension,
+       conference   [6] ConferenceExtension,
        moderation   [7] ModerationExtension,
        inbox        [8] InboxExtension,
        search       [9] SearchExtension,
@@ -218,7 +218,7 @@ BEGIN
        result  [2] PersonAnswer
     }
 
-    MemberCore ::= CHOICE {
+    MemberExtension ::= CHOICE {
        request [1] MemberQuery,
        result  [2] MemberAnswer
     }
@@ -658,7 +658,7 @@ BEGIN
        status ConferenceStatus
     }
 
-    ConferenceCore ::= CHOICE {
+    ConferenceExtension ::= CHOICE {
        request [1] ConferenceQuery,
        result  [2] ConferenceAnswer
     }

@@ -316,8 +316,8 @@ Query ::= SEQUENCE {
                             <h5>4.3 Query Core & Extensions</h5>
                             <pre class="code-snippet">
 QueryPayload ::= CHOICE {
-   presence     [1] PresenceCore,
-   subscription [2] SubscriptionCore,
+   subscription [1] SubscriptionCore,
+   presence     [2] PresenceCore,
    person       [3] PersonCore,
    roster       [4] RosterCore,
    member       [5] MemberCore,
@@ -331,97 +331,7 @@ QueryPayload ::= CHOICE {
                         </div>
 
                         <div>
-                            <h4>5 Inbox</h4>
-                            <p>Folder queues management for historical message retrieval.</p>
-                            <pre class="code-snippet">
-InboxMethod ::= ENUMERATED { get(1), erase(2), ...}
-
-Inbox ::= SEQUENCE {
-   id OCTET STRING, vsn Version,
-   session OCTET STRING, type InboxMethod,
-   feed MessageFeed,
-   messages [0] SEQUENCE OF
-      message Message OPTIONAL, ... }
-
-InboxOp ::= ENUMERATED { get(1), erase(2), ... }
-
-InboxQuery ::= SEQUENCE {
-   op InboxOp, feed [0] MessageFeed OPTIONAL, ... }
-
-InboxItem ::= SEQUENCE { message Message }
-
-InboxAnswer ::= SEQUENCE {
-   items [0] SEQUENCE OF item InboxItem OPTIONAL, ... }
-
-InboxExtension ::= CHOICE {
-   request [1] InboxQuery, result [2] InboxAnswer }</pre>
-                        </div>
-
-                        <div>
-                            <h4>6 Event</h4>
-                            <p>Unified real-time notification channel for Ack and Activity.</p>
-                            <pre class="code-snippet">
-MessageEventType ::= ENUMERATED { received(1),
-   delivered(2), read(3), edited(4), deleted(5),
-   updated(6), ... }
-
-MessageEvent ::= SEQUENCE {
-   type MessageEventType,
-   messageId [0] OCTET STRING OPTIONAL,
-   feed [1] MessageFeed OPTIONAL,
-   actor [2] OCTET STRING OPTIONAL,
-   timestamp [3] INTEGER OPTIONAL, ... }
-
-PresenceEvent ::= SEQUENCE {
-   type PresenceEventType,
-   feed [0] MessageFeed OPTIONAL,
-   actor [1] OCTET STRING OPTIONAL,
-   timestamp [2] INTEGER OPTIONAL, ... }
-
-EventPayload ::= CHOICE {
-   message [1] MessageEvent,
-   presence [2] PresenceEvent }
-
-Event ::= SEQUENCE {
-   id OCTET STRING, vsn Version,
-   session OCTET STRING, payload EventPayload, ... }</pre>
-                        </div>
-
-                        <div>
-                            <h4>7 Search (LDAP)</h4>
-                            <p>Directory lookup and search functions for users and rooms.</p>
-                            <pre class="code-snippet">
-SearchQuery ::= SEQUENCE {
-   op SearchOp, dn [0] OCTET STRING OPTIONAL,
-   field [1] OCTET STRING OPTIONAL,
-   value [2] OCTET STRING OPTIONAL,
-   criteria [3] Criteria OPTIONAL,
-   type [4] Scope OPTIONAL, ... }
-
-SearchItem ::= SEQUENCE {
-   dn [0] OCTET STRING OPTIONAL,
-   field [1] OCTET STRING OPTIONAL,
-   value [2] OCTET STRING OPTIONAL,
-   criteria [3] Criteria OPTIONAL,
-   type [4] Scope OPTIONAL }
-
-SearchAnswer ::= SEQUENCE {
-   items [0] SEQUENCE OF item
-      SearchItem OPTIONAL, ... }
-
-SearchExtension ::= CHOICE {
-   request [1] SearchQuery,
-   result [2] SearchAnswer }</pre>
-                        </div>
-
-
-                    </div>
-                    <!-- Right Column -->
-                    <div class="grid-col">
-
-
-                        <div>
-                            <h4>8 Subscription</h4>
+                            <h4>5 Subscription Core</h4>
                             <p>Fact of connection between actors and targets.</p>
                             <pre class="code-snippet">
 Subscription ::= SEQUENCE {
@@ -439,7 +349,7 @@ SubscriptionAnswer ::= SEQUENCE {
                         </div>
 
                         <div>
-                            <h4>9 Roster, Presence & Person</h4>
+                            <h4>6 Roster, Presence & Person Core</h4>
                             <p>Synchronized contact lists and detailed profile information.</p>
                             <pre class="code-snippet">
 PresenceQuery ::= SEQUENCE {
@@ -493,26 +403,15 @@ RosterAnswer ::= SEQUENCE {
    ... }</pre>
                         </div>
 
-                        <div>
-                            <h4>10 Moderation</h4>
-                            <p>Server-side access control and restriction policies.</p>
-                            <pre class="code-snippet">
-ModerationQuery ::= SEQUENCE {
-   op ModerationOp, actor [0] OCTET STRING OPTIONAL,
-   target [1] OCTET STRING OPTIONAL, ... }
+                    </div>
+                    <!-- Right Column -->
+                    <div class="grid-col">
 
-ModerationAnswer ::= SEQUENCE {
-   item [0] ModerationItem OPTIONAL,
-   items [1] SEQUENCE OF item
-      ModerationItem OPTIONAL, ... }
 
-ModerationExtension ::= CHOICE {
-   request [1] ModerationQuery,
-   result [2] ModerationAnswer }</pre>
-                        </div>
+
 
                         <div>
-                            <h4>11 Conference</h4>
+                            <h4>7 Member & Conference Extensions</h4>
                             <p>Multi-user chat rooms, channels, and group calls.</p>
                             <pre class="code-snippet">
 MemberQuery ::= SEQUENCE {
@@ -522,6 +421,11 @@ MemberQuery ::= SEQUENCE {
 MemberAnswer ::= SEQUENCE {
    item [0] MemberItem OPTIONAL,
    items [1] SEQUENCE OF item MemberItem OPTIONAL }
+
+MemberExtension ::= CHOICE {
+   request [1] MemberQuery,
+   result  [2] MemberAnswer
+}
 
 Conference ::= SEQUENCE {
    id OCTET STRING,
@@ -540,11 +444,89 @@ ConferenceQuery ::= SEQUENCE {
 ConferenceAnswer ::= SEQUENCE {
    item [0] ConferenceItem OPTIONAL,
    items [1] SEQUENCE OF item
-      ConferenceItem OPTIONAL, ... }</pre>
+      ConferenceItem OPTIONAL, ... }
+
+ConferenceExtension ::= CHOICE {
+   request [1] ConferenceQuery,
+   result  [2] ConferenceAnswer }
+</pre>
                         </div>
 
                         <div>
-                            <h4>12 Protocol Envelope</h4>
+                            <h4>8 Moderation Extension</h4>
+                            <p>Server-side access control and restriction policies.</p>
+                            <pre class="code-snippet">
+ModerationQuery ::= SEQUENCE {
+   op ModerationOp, actor [0] OCTET STRING OPTIONAL,
+   target [1] OCTET STRING OPTIONAL, ... }
+
+ModerationAnswer ::= SEQUENCE {
+   item [0] ModerationItem OPTIONAL,
+   items [1] SEQUENCE OF item
+      ModerationItem OPTIONAL, ... }
+
+ModerationExtension ::= CHOICE {
+   request [1] ModerationQuery,
+   result [2] ModerationAnswer }</pre>
+                        </div>
+
+                        <div>
+                            <h4>9 Inbox Entension</h4>
+                            <p>Folder queues management for historical message retrieval.</p>
+                            <pre class="code-snippet">
+InboxMethod ::= ENUMERATED { get(1), erase(2), ...}
+
+Inbox ::= SEQUENCE {
+   id OCTET STRING, vsn Version,
+   session OCTET STRING, type InboxMethod,
+   feed MessageFeed,
+   messages [0] SEQUENCE OF
+      message Message OPTIONAL, ... }
+
+InboxOp ::= ENUMERATED { get(1), erase(2), ... }
+
+InboxQuery ::= SEQUENCE {
+   op InboxOp, feed [0] MessageFeed OPTIONAL, ... }
+
+InboxItem ::= SEQUENCE { message Message }
+
+InboxAnswer ::= SEQUENCE {
+   items [0] SEQUENCE OF item InboxItem OPTIONAL, ... }
+
+InboxExtension ::= CHOICE {
+   request [1] InboxQuery, result [2] InboxAnswer }</pre>
+                        </div>
+
+                        <div>
+                            <h4>10 Search Extension</h4>
+                            <p>Directory lookup and search functions for users and rooms.</p>
+                            <pre class="code-snippet">
+SearchQuery ::= SEQUENCE {
+   op SearchOp, dn [0] OCTET STRING OPTIONAL,
+   field [1] OCTET STRING OPTIONAL,
+   value [2] OCTET STRING OPTIONAL,
+   criteria [3] Criteria OPTIONAL,
+   type [4] Scope OPTIONAL, ... }
+
+SearchItem ::= SEQUENCE {
+   dn [0] OCTET STRING OPTIONAL,
+   field [1] OCTET STRING OPTIONAL,
+   value [2] OCTET STRING OPTIONAL,
+   criteria [3] Criteria OPTIONAL,
+   type [4] Scope OPTIONAL }
+
+SearchAnswer ::= SEQUENCE {
+   items [0] SEQUENCE OF item
+      SearchItem OPTIONAL, ... }
+
+SearchExtension ::= CHOICE {
+   request [1] SearchQuery,
+   result [2] SearchAnswer }</pre>
+                        </div>
+
+
+                        <div>
+                            <h4>11 Protocol Envelope</h4>
                             <p>Top-level transport envelope for multiplexing protocol units.</p>
                             <pre class="code-snippet">
 CHATProtocol ::= CHOICE {
