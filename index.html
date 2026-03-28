@@ -44,7 +44,7 @@
             <p style="text-align: center; margin-bottom: 2rem;">CMS secured UDP multicast serverless communication for
                 local area networks.</p>
             <div class="package-card">
-                <h3>Layer 1: Serverless Multicast</h3>
+                <h3>Layer 1: Skynet Serverless Multicast</h3>
                 <hr>
                 <p>The first layer <b>MESSAGE-L1.asn1</b> defines core primitives for peer-to-peer and multi-user
                     communication without a central broker. It uses UDP multicast for discovery and
@@ -314,15 +314,15 @@ Query ::= SEQUENCE {
 
                             <pre class="code-snippet">
     QueryPayload ::= CHOICE {
-       subscription [1] SubscriptionQueryEnvelope,
-       presence     [2] PresenceQueryEnvelope,
-       person       [3] PersonQueryEnvelope,
-       member       [4] MemberQueryEnvelope,
-       roster       [5] RosterQueryEnvelope,
-       conference   [6] ConferenceQueryEnvelope,
-       inbox        [7] InboxQueryEnvelope,
-       search       [8] SearchQueryEnvelope,
-       moderation   [9] ModerationQueryEnvelope,
+       subscription [1] SubscriptionExtension,
+       presence     [2] PresenceExtension,
+       person       [3] PersonExtension,
+       member       [4] MemberExtension,
+       roster       [5] RosterExtension,
+       conference   [6] ConferenceExtension,
+       inbox        [7] InboxExtension,
+       search       [8] SearchExtension,
+       moderation   [9] ModerationExtension,
        ...
     }</pre>
 
