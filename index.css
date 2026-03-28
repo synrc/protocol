@@ -546,7 +546,7 @@ footer {
     }
 }
 
-.grid-2 h4 {
+h4 {
     margin-top: 0;
     margin-bottom: 1rem;
     color: var(--accent-dark);
@@ -578,7 +578,7 @@ footer {
     text-overflow: ellipsis;
 }
 
-.grid-2 li b {
+li b {
     color: var(--accent);
     margin-right: 0.3rem;
 }

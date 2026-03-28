@@ -46,102 +46,62 @@
             <div class="package-card">
                 <h3>V1: Serverless Multicast</h3>
                 <hr>
-                <p>This layer <b>MESSAGE-v1.asn1</b> defines the core primitives for peer-to-peer and multi-user
-                    communication without the need for a central broker. It uses UDP multicast for discovery and
+                <p>The first layer <b>MESSAGE-v1.asn1</b> defines core primitives for peer-to-peer and multi-user
+                    communication without a central broker. It uses UDP multicast for discovery and
                     delivery, featuring authority registration and file sharing.</p>
-                <pre class="code-snippet">
-MESSAGE-v1 DEFINITIONS ::= BEGIN
 
-    IMPORTS ContentInfo FROM CryptographicMessageSyntax-2009
-            Certificate FROM PKIX1Explicit-2009 ;
-
-    OS  ::= ENUMERATED { apple (1), microsoft (2), google (3),
-                         ericsson (4), nokia (5), cisco (6) }
-
-    P2P ::= SEQUENCE { from OCTET STRING, to OCTET STRING }
-    MUC ::= SEQUENCE { room OCTET STRING }
-
-    CHATString ::= OCTET STRING
-
-    -- 01 Authority (CA)
-
-    Feature ::= SEQUENCE {
-       id OCTET STRING,
-       key OCTET STRING,
-       value OCTET STRING,
-       group OCTET STRING }
-
-    AuthorityMethod ::= ENUMERATED { announce (0), register (1),
-       authenticate (2), dismiss (3), renew (4) }
-    Authority ::= SEQUENCE {
-       session OCTET STRING,
-       type AuthorityMethod,
-       cert OCTET STRING,
-       settings SEQUENCE OF feature Feature }
-
-    -- 02 Message (CHAT)
-
-    File ::= SEQUENCE {
-       id OCTET STRING,
-       mime OCTET STRING,
-       payload ANY,
-       parentid OCTET STRING }
-
-    Channel ::= SEQUENCE { channel OCTET STRING }
-    MessageType ::= ENUMERATED { sys (1), reply (2), forward (3), read (4), edited (5) }
-    MessageStatus ::= ENUMERATED { async (1), delete (2), clear (3), update (4), edit (5) }
-    MessageFeed ::= CHOICE { p2p [0] P2P, muc [1] MUC, chan [2] Channel }
-    Message ::= SEQUENCE {
-       id CHATString,
-       feed MessageFeed,
-       from CHATString,
-       to CHATString,
-       files SEQUENCE OF file File,
-       type MessageType,
-       link CHOICE { empty [1] NULL, message [2] Message },
-       seenby CHATString,
-       repliedby CHATString,
-       mentioned SEQUENCE OF name CHATString,
-       status MessageStatus DEFAULT clear }
-
-    Ack ::= SEQUENCE { table OCTET STRING, id OCTET STRING }
-
-    -- 05 Activity (Presense, Typing, Async Messages)
-
-    Activity ::= SEQUENCE {
-       id OCTET STRING,
-       vsn Version,
-       session OCTET STRING,
-       nickname OCTET STRING,
-       comments SEQUENCE OF comment OCTET STRING }
-
-END</pre>
-            </div>
-        </section>
-
-        <section>
-            <h2>CHAT X.509</h2>
-            <p style="text-align: center; margin-bottom: 2rem;">TLS unicast broker and PKI X.509 infrastructure (ПК КЗІ
-                X.509).</p>
-            <div class="package-card protocol-card">
-                <h3>V2: Brokered TLS & PKI</h3>
-                <hr>
-                <p>The second layer <b>CHAT-v2.asn1</b> introduces a central broker architecture with TLS encryption. It
-                    implements full X.509 PKI support, LDAP-based search, and complex subscription/presence mechanisms
-                    for global messaging systems.</p>
-
-                <div class="grid-2">
-                    <!-- Left Column -->
-                    <div class="grid-col">
+                <div class="grid-col">
                         <div>
-                            <h4>00 Core Types</h4>
+                            <h4>00 Basic</h4>
                             <pre class="code-snippet">
 Version ::= INTEGER { v0(0), v1(1), v2(2), v3(3) }
-OS ::= ENUMERATED { apple(1), microsoft(2), google(3),
+Flavour ::= ENUMERATED { apple(1), microsoft(2), google(3),
                     ericsson(4), nokia(5), cisco(6) }</pre>
                             <ul>
                                 <li><b>Version</b>: Protocol version from v0 to v3.</li>
-                                <li><b>OS</b>: Supported operating systems for optimization.</li>
+                                <li><b>Flavour</b>: Supported operating systems for optimization.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>01 Authority</h4>
+                            <pre class="code-snippet">
+Feature ::= SEQUENCE {
+   id OCTET STRING,
+   key OCTET STRING,
+   value OCTET STRING,
+   group OCTET STRING }</pre>
+                            <ul>
+                                <li><b>id</b>: Unique configuration identifier.</li>
+                                <li><b>key</b>: Semantic name of the feature.</li>
+                                <li><b>value</b>: Current operational parameter.</li>
+                                <li><b>group</b>: Categorical domain isolation.</li>
+                            </ul>
+                            <pre class="code-snippet">
+AuthorityMethod ::= ENUMERATED { announce(0), enroll(1),
+   authenticate(2), revoke(3), renew(4), ... }</pre>
+                            <ul>
+                                <li><b>announce</b>: Authority presence discovery.</li>
+                                <li><b>enroll</b>: PKI enrollment entry-point.</li>
+                                <li><b>authenticate</b>: Identity verification via challenges.</li>
+                                <li><b>revoke</b>: Decommissioning of credentials.</li>
+                                <li><b>renew</b>: Extension of validity for certificates.</li>
+                            </ul>
+                            <pre class="code-snippet">
+Authority ::= SEQUENCE {
+   id OCTET STRING,
+   vsn Version,
+   session OCTET STRING,
+   type AuthorityMethod,
+   cert OCTET STRING,
+   settings SEQUENCE OF feature Feature, ... }</pre>
+                            <ul>
+                                <li><b>id</b>: Stable administrative authority ID.</li>
+                                <li><b>vsn</b>: Authority protocol version.</li>
+                                <li><b>session</b>: Stateful session token.</li>
+                                <li><b>type</b>: Administrative action type.</li>
+                                <li><b>cert</b>: X.509 certificate encoding.</li>
+                                <li><b>settings</b>: Collection of active features.</li>
                             </ul>
                         </div>
 
@@ -191,7 +151,7 @@ Message ::= SEQUENCE {
                         </div>
 
                         <div>
-                            <h4>04 Event</h4>
+                            <h4>03 Event</h4>
                             <pre class="code-snippet">
 MessageEventType ::= ENUMERATED { received(1),
    delivered(2), read(3), edited(4), deleted(5),
@@ -250,178 +210,24 @@ Event ::= SEQUENCE {
                                 <li><b>payload</b>: Message or Presence content.</li>
                             </ul>
                         </div>
+                </div>
+            </div>
+        </section>
 
-                        <div>
-                            <h4>06 Search</h4>
-                            <pre class="code-snippet">
-SearchQueryRequest ::= SEQUENCE {
-   op SearchOp,
-   dn OCTET STRING OPTIONAL,
-   field OCTET STRING OPTIONAL,
-   value OCTET STRING OPTIONAL,
-   criteria Criteria OPTIONAL,
-   type Scope OPTIONAL, ... }</pre>
-                            <ul>
-                                <li><b>op</b>: Search operation to perform.</li>
-                                <li><b>dn</b>: Distinguished Name base path.</li>
-                                <li><b>field</b>: Property targeted by search.</li>
-                                <li><b>value</b>: Search term or pattern.</li>
-                                <li><b>criteria</b>: Matching logic (equality, regex).</li>
-                                <li><b>type</b>: Scope of the search.</li>
-                            </ul>
-                            <pre class="code-snippet">
-SearchQueryResult ::= SEQUENCE {
-   items SEQUENCE OF item SearchItem OPTIONAL, ... }</pre>
-                            <ul>
-                                <li><b>items</b>: Results matching parameters.</li>
-                            </ul>
-                        </div>
+        <section>
+            <h2>CHAT X.509</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">TLS unicast broker and PKI X.509 infrastructure (ПК КЗІ
+                X.509).</p>
+            <div class="package-card protocol-card">
+                <h3>V2: Brokered TLS & PKI</h3>
+                <hr>
+                <p>The second layer <b>CHAT-v2.asn1</b> introduces a central broker architecture with TLS encryption. It
+                    implements full X.509 PKI support, LDAP-based search, and complex subscription/presence mechanisms
+                    for global messaging systems.</p>
 
-                        <div>
-                            <h4>08 Presence & Person</h4>
-                            <pre class="code-snippet">
-Presence ::= ENUMERATED { offline(1), online(2), ... }</pre>
-                            <ul>
-                                <li><b>offline</b>: Not active on the network.</li>
-                                <li><b>online</b>: Active and reachable.</li>
-                            </ul>
-                            <pre class="code-snippet">
-Person ::= SEQUENCE {
-   id OCTET STRING,
-   nickname OCTET STRING,
-   avatar OCTET STRING,
-   names SEQUENCE OF name OCTET STRING,
-   phone OCTET STRING,
-   surnames SEQUENCE OF name OCTET STRING,
-   presence Presence,
-   update INTEGER,
-   created INTEGER,
-   settings SEQUENCE OF feature Feature OPTIONAL,
-   status PersonStatus, ... }</pre>
-                            <ul>
-                                <li><b>id</b>: Permanent profile identifier.</li>
-                                <li><b>nickname</b>: Readable display name.</li>
-                                <li><b>avatar</b>: Profile image URI/ID.</li>
-                                <li><b>names</b>: List of given names.</li>
-                                <li><b>phone</b>: Verification contact number.</li>
-                                <li><b>surnames</b>: List of family names.</li>
-                                <li><b>presence</b>: Current availability state.</li>
-                                <li><b>update</b>: Last modification timestamp.</li>
-                                <li><b>created</b>: Profile instantiation time.</li>
-                                <li><b>settings</b>: Configuration features.</li>
-                                <li><b>status</b>: Operational status.</li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4>10 Moderation</h4>
-                            <pre class="code-snippet">
-ModerationQueryRequest ::= SEQUENCE {
-   op ModerationOp,
-   actor OCTET STRING OPTIONAL,
-   target OCTET STRING OPTIONAL, ... }</pre>
-                            <ul>
-                                <li><b>op</b>: Moderation action (ban/list).</li>
-                                <li><b>actor</b>: Subject of restrictions.</li>
-                                <li><b>target</b>: Event or channel scope.</li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4>12 Protocol</h4>
-                            <pre class="code-snippet">
-CHATProtocol ::= CHOICE {
-   authority [1] Authority,
-   message [2] Message,
-   event [4] Event,
-   query [5] Query }</pre>
-                            <ul>
-                                <li><b>authority</b>: Admin and PKI interactions.</li>
-                                <li><b>message</b>: Communication and data exchange.</li>
-                                <li><b>event</b>: Lifecycle and presence sync.</li>
-                                <li><b>query</b>: Request/response layer.</li>
-                            </ul>
-                            <pre class="code-snippet">
-CHATMessage ::= SEQUENCE {
-   no INTEGER,
-   headers SEQUENCE OF header OCTET STRING,
-   body CHATProtocol }</pre>
-                            <ul>
-                                <li><b>no</b>: Transport sequence number.</li>
-                                <li><b>headers</b>: Routing and security metadata.</li>
-                                <li><b>body</b>: Actual protocol payload.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
+                <div class="grid-2">
+                    <!-- Left Column -->
                     <div class="grid-col">
-                        <div>
-                            <h4>01 Authority</h4>
-                            <pre class="code-snippet">
-Feature ::= SEQUENCE {
-   id OCTET STRING,
-   key OCTET STRING,
-   value OCTET STRING,
-   group OCTET STRING }</pre>
-                            <ul>
-                                <li><b>id</b>: Unique configuration identifier.</li>
-                                <li><b>key</b>: Semantic name of the feature.</li>
-                                <li><b>value</b>: Current operational parameter.</li>
-                                <li><b>group</b>: Categorical domain isolation.</li>
-                            </ul>
-                            <pre class="code-snippet">
-AuthorityMethod ::= ENUMERATED { announce(0), enroll(1),
-   authenticate(2), revoke(3), renew(4), ... }</pre>
-                            <ul>
-                                <li><b>announce</b>: Authority presence discovery.</li>
-                                <li><b>enroll</b>: PKI enrollment entry-point.</li>
-                                <li><b>authenticate</b>: Identity verification via challenges.</li>
-                                <li><b>revoke</b>: Decommissioning of credentials.</li>
-                                <li><b>renew</b>: Extension of validity for certificates.</li>
-                            </ul>
-                            <pre class="code-snippet">
-Authority ::= SEQUENCE {
-   id OCTET STRING,
-   vsn Version,
-   session OCTET STRING,
-   type AuthorityMethod,
-   cert OCTET STRING,
-   settings SEQUENCE OF feature Feature, ... }</pre>
-                            <ul>
-                                <li><b>id</b>: Stable administrative authority ID.</li>
-                                <li><b>vsn</b>: Authority protocol version.</li>
-                                <li><b>session</b>: Stateful session token.</li>
-                                <li><b>type</b>: Administrative action type.</li>
-                                <li><b>cert</b>: X.509 certificate encoding.</li>
-                                <li><b>settings</b>: Collection of active features.</li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4>03 Inbox</h4>
-                            <pre class="code-snippet">
-InboxOp ::= ENUMERATED { get(1), erase(2), ... }</pre>
-                            <ul>
-                                <li><b>get</b>: Inbox retrieval request.</li>
-                                <li><b>erase</b>: Inbox cleanup request.</li>
-                            </ul>
-                            <pre class="code-snippet">
-InboxQueryRequest ::= SEQUENCE {
-   op InboxOp,
-   feed MessageFeed OPTIONAL, ... }</pre>
-                            <ul>
-                                <li><b>op</b>: Selection of inbox operation.</li>
-                                <li><b>feed</b>: Optional filter to scope query.</li>
-                            </ul>
-                            <pre class="code-snippet">
-InboxQueryResult ::= SEQUENCE {
-   items SEQUENCE OF item InboxItem OPTIONAL, ... }</pre>
-                            <ul>
-                                <li><b>items</b>: Inbox results matching criteria.</li>
-                            </ul>
-                        </div>
-
                         <div>
                             <h4>05 Query Layer</h4>
                             <pre class="code-snippet">
@@ -454,6 +260,45 @@ Query ::= SEQUENCE {
                                 <li><b>target</b>: Hint for specialized services.</li>
                                 <li><b>payload</b>: Envelope containing typed data.</li>
                                 <li><b>code</b>: Numerical status return code.</li>
+                            </ul>
+
+                            <pre class="code-snippet">
+    QueryPayload ::= CHOICE {
+       subscription [1] SubscriptionQueryEnvelope,
+       presence     [2] PresenceQueryEnvelope,
+       person       [3] PersonQueryEnvelope,
+       member       [4] MemberQueryEnvelope,
+       roster       [5] RosterQueryEnvelope,
+       conference   [6] ConferenceQueryEnvelope,
+       inbox        [7] InboxQueryEnvelope,
+       search       [8] SearchQueryEnvelope,
+       moderation   [9] ModerationQueryEnvelope,
+       ...
+    }</pre>
+
+                        </div>
+
+                        <div>
+                            <h4>04 Inbox</h4>
+                            <pre class="code-snippet">
+InboxOp ::= ENUMERATED { get(1), erase(2), ... }</pre>
+                            <ul>
+                                <li><b>get</b>: Inbox retrieval request.</li>
+                                <li><b>erase</b>: Inbox cleanup request.</li>
+                            </ul>
+                            <pre class="code-snippet">
+InboxQueryRequest ::= SEQUENCE {
+   op InboxOp,
+   feed MessageFeed OPTIONAL, ... }</pre>
+                            <ul>
+                                <li><b>op</b>: Selection of inbox operation.</li>
+                                <li><b>feed</b>: Optional filter to scope query.</li>
+                            </ul>
+                            <pre class="code-snippet">
+InboxQueryResult ::= SEQUENCE {
+   items SEQUENCE OF item InboxItem OPTIONAL, ... }</pre>
+                            <ul>
+                                <li><b>items</b>: Inbox results matching criteria.</li>
                             </ul>
                         </div>
 
@@ -507,6 +352,72 @@ Roster ::= SEQUENCE {
                                 <li><b>status</b>: Roster resource state.</li>
                             </ul>
                         </div>
+
+                    </div>
+                    <!-- Right Column -->
+                    <div class="grid-col">
+
+                        <div>
+                            <h4>08 Presence & Person</h4>
+                            <pre class="code-snippet">
+Presence ::= ENUMERATED { offline(1), online(2), ... }</pre>
+                            <ul>
+                                <li><b>offline</b>: Not active on the network.</li>
+                                <li><b>online</b>: Active and reachable.</li>
+                            </ul>
+                            <pre class="code-snippet">
+Person ::= SEQUENCE {
+   id OCTET STRING,
+   nickname OCTET STRING,
+   avatar OCTET STRING,
+   names SEQUENCE OF name OCTET STRING,
+   phone OCTET STRING,
+   surnames SEQUENCE OF name OCTET STRING,
+   presence Presence,
+   update INTEGER,
+   created INTEGER,
+   settings SEQUENCE OF feature Feature OPTIONAL,
+   status PersonStatus, ... }</pre>
+                            <ul>
+                                <li><b>id</b>: Permanent profile identifier.</li>
+                                <li><b>nickname</b>: Readable display name.</li>
+                                <li><b>avatar</b>: Profile image URI/ID.</li>
+                                <li><b>names</b>: List of given names.</li>
+                                <li><b>phone</b>: Verification contact number.</li>
+                                <li><b>surnames</b>: List of family names.</li>
+                                <li><b>presence</b>: Current availability state.</li>
+                                <li><b>update</b>: Last modification timestamp.</li>
+                                <li><b>created</b>: Profile instantiation time.</li>
+                                <li><b>settings</b>: Configuration features.</li>
+                                <li><b>status</b>: Operational status.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>10 Moderation</h4>
+                            <pre class="code-snippet">
+ModerationQueryRequest ::= SEQUENCE {
+   op ModerationOp,
+   actor OCTET STRING OPTIONAL,
+   target OCTET STRING OPTIONAL, ... }</pre>
+                            <ul>
+                                <li><b>op</b>: Moderation action (ban/list).</li>
+                                <li><b>actor</b>: Subject of restrictions.</li>
+                                <li><b>target</b>: Event or channel scope.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+
+                            <h4>07 Directory Search</h4>
+                            <pre class="code-snippet">
+SearchQueryResult ::= SEQUENCE {
+   items SEQUENCE OF item SearchItem OPTIONAL, ... }</pre>
+                            <ul>
+                                <li><b>items</b>: Results matching parameters.</li>
+                            </ul>
+                        </div>
+
 
                         <div>
                             <h4>11 Conference</h4>
@@ -565,8 +476,38 @@ Conference ::= SEQUENCE {
                                 <li><b>status</b>: Conference operational state.</li>
                             </ul>
                         </div>
+
+                        <div>
+                            <h4>12 Protocol</h4>
+                            <pre class="code-snippet">
+CHATProtocol ::= CHOICE {
+   authority [1] Authority,
+   message [2] Message,
+   event [4] Event,
+   query [5] Query }</pre>
+                            <ul>
+                                <li><b>authority</b>: Admin and PKI interactions.</li>
+                                <li><b>message</b>: Communication and data exchange.</li>
+                                <li><b>event</b>: Lifecycle and presence sync.</li>
+                                <li><b>query</b>: Request/response layer.</li>
+                            </ul>
+
+                            <pre class="code-snippet">
+CHATMessage ::= SEQUENCE {
+   no INTEGER,
+   headers SEQUENCE OF header OCTET STRING,
+   body CHATProtocol }</pre>
+                            <ul>
+                                <li><b>no</b>: Transport sequence number.</li>
+                                <li><b>headers</b>: Routing and security metadata.</li>
+                                <li><b>body</b>: Actual protocol payload.</li>
+                            </ul>
+                        </div>
+
                     </div>
-                </div>
+
+
+
             </div>
         </section>
 
