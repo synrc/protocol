@@ -314,15 +314,15 @@ Query ::= SEQUENCE {
 
                             <pre class="code-snippet">
     QueryPayload ::= CHOICE {
-       subscription [1] SubscriptionExtension,
-       presence     [2] PresenceExtension,
-       person       [3] PersonExtension,
-       member       [4] MemberExtension,
-       roster       [5] RosterExtension,
-       conference   [6] ConferenceExtension,
-       inbox        [7] InboxExtension,
-       search       [8] SearchExtension,
-       moderation   [9] ModerationExtension,
+       presence     [1] PresenceCore,
+       subscription [2] SubscriptionCore,
+       person       [3] PersonCore,
+       roster       [4] RosterCore,
+       member       [5] MemberCore,
+       conference   [6] ConferenceCore,
+       moderation   [7] ModerationExtension,
+       inbox        [8] InboxExtension,
+       search       [9] SearchExtension,
        ...
     }</pre>
 
