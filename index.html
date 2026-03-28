@@ -46,7 +46,7 @@
             <div class="package-card">
                 <h3>Layer 1: Serverless Multicast</h3>
                 <hr>
-                <p>The first layer <b>MESSAGE-v1.asn1</b> defines core primitives for peer-to-peer and multi-user
+                <p>The first layer <b>MESSAGE-L1.asn1</b> defines core primitives for peer-to-peer and multi-user
                     communication without a central broker. It uses UDP multicast for discovery and
                     delivery, featuring authority registration and file sharing.</p>
 
@@ -131,8 +131,7 @@ MessageType ::= ENUMERATED { normal(0), sys(1),
 
                             <pre class="code-snippet">
 MessageFeed ::= CHOICE { private [1] Privatebox,
-   chan [2] Streambox, mailbox [4] Mailbox,
-   group [8] Groupbox }</pre>
+   chan [2] Streambox, mailbox [3] Mailbox, group [4] Groupbox }</pre>
                             <ul>
                                 <li><b>private</b>: Single-user private delivery.</li>
                                 <li><b>chan</b>: Targeting a broadcast or multicast stream.</li>
@@ -190,7 +189,7 @@ Message ::= SEQUENCE {
                             <h4>3 Event</h4>
                             <p>Event is an abstraction for server-directed push messages.</p>
                             <h5>3.1 Event</h5>
-                            <p>In ASN.1 SMP Core the could be only Message or Presence Events.</p>
+                            <p>In ASN.1 SMP Core there could be only Message or Presence Events.</p>
                             <pre class="code-snippet">
 Event ::= SEQUENCE {
    id OCTET STRING,
@@ -268,7 +267,7 @@ PresenceEvent ::= SEQUENCE {
             <div class="package-card protocol-card">
                 <h3>Layer 2: Brokered TLS & PKI</h3>
                 <hr>
-                <p>The second layer <b>CHAT-v2.asn1</b> introduces a central broker architecture with TLS encryption. It
+                <p>The second layer <b>CHAT-L2.asn1</b> introduces a central broker architecture with TLS encryption. It
                     implements full X.509 PKI support, LDAP-based search, and complex subscription/presence mechanisms
                     for global messaging systems.</p>
 
@@ -569,13 +568,13 @@ CHATMessage ::= SEQUENCE {
             <div class="package-card">
                 <h3>Layer 3: Document-Centric MHS / IPMS</h3>
                 <hr>
-                <p>The third layer <b>MAIL-v3.asn1</b> is an extension of v2, incorporating InterPersonal Messaging
+                <p>The <b>MAIL-L3.asn1</b> is an extension of layer 2, incorporating InterPersonal Messaging
                     Service (IPMS) and Message Handling System (MHS) patterns from X.400. It is tailored for official
                     document flow, implementing strict ERP/1 requirements and the Ministry of Defense Order №40.</p>
                 <pre class="code-snippet">
 MAIL-v3 DEFINITIONS IMPLICIT TAGS ::= BEGIN
 
-    IMPORTS CHATProtocol, Message, File FROM CHAT-v2 ;
+    IMPORTS CHATProtocol, Message, File FROM CHAT-L2 ;
 
     --- IPMS/MHS Extension for ERP/1
 
