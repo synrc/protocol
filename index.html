@@ -96,6 +96,8 @@ AuthorityMethod ::= ENUMERATED { announce(0), enroll(1),
                             <li><b>renew</b>: Extension of validity for certificates.</li>
                         </ul>
                         <h5>1.2 Authority</h5>
+                        <p><b>v1</b>: Authority announce is being sent directly from device to device over UDP.
+                           Each device has its own CA. <b>v2</b>: Authority is a full mirror of CA CMP protocol.</p>
                         <pre class="code-snippet">
 Authority ::= SEQUENCE {
    id OCTET STRING,
@@ -116,7 +118,8 @@ Authority ::= SEQUENCE {
 
                     <div>
                         <h4>2 Message</h4>
-                        <p>Message is main object in the system and main table in the MNESIA database.
+                        <p><b>v1</b>: Message is being sent directly from device to device over UDP.
+                            <b>v2</b>: Message is main object in the system and main table in the MNESIA database.
                             Once MessageEventType delivered is sent — it is physically deleted from server.</p>
 
                         <h5>2.1 Message Type</h5>
@@ -174,6 +177,8 @@ Message ::= SEQUENCE {
                         </ul>
 
                         <h5>2.4 File</h5>
+                        <p><b>v1</b>: File is being sent directly from device to device over UDP.
+                           <b>v2</b>: File is a full mirror of N2O FTP protocol.</p>
 
                         <pre class="code-snippet">
     File ::= SEQUENCE {
@@ -188,14 +193,13 @@ Message ::= SEQUENCE {
                             <li><b>payload</b>: CMS ContentInfo.</li>
                             <li><b>parentid</b>: Link to parent block.</li>
                         </ul>
-
-
-
                     </div>
 
                     <div>
                         <h4>3 Event</h4>
-                        <p>Event is an abstraction for server-directed push messages.</p>
+                        <p>Event is an abstraction for server-directed push messages.
+                           <b>v1</b>: Event is being sent directly from device to device over UDP for Message Acknowledgments.
+                           <b>v2</b>: Event is controlled by server.</p>
                         <h5>3.1 Event</h5>
                         <p>In ASN.1 BUDDHA Core there could be only Message or Presence Events.</p>
                         <pre class="code-snippet">
@@ -285,7 +289,8 @@ PresenceEvent ::= SEQUENCE {
                     <div class="grid-col">
                         <div>
                             <h4>4 Query</h4>
-                            <p>Query Layer provides RPC-like request/response mechanism for CHAT infrastructure.</p>
+                            <p>Query Layer provides RPC-like request/response mechanism for CHAT infrastructure.
+                               Query Layer is mirroring XEP-0148 (IM IQ).</p>
                             <h5>4.1 Query Type</h5>
                             <pre class="code-snippet">
 QueryType ::= ENUMERATED { get(1), set(2),
