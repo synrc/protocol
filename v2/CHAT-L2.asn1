@@ -1,5 +1,7 @@
---- Протокол Месенжера Сохацького v2 для паб-саб брокерів на TLS
+--- Протокол Месенжера Сохацького (Будда Протокол) v2 для паб-саб брокерів на TLS
 --- https://tonpa.guru/stream/2023/2023-08-07%20CHAT%20ASN.1.htm
+--- Верифікація протоколу для узгодженого порівняння з XMPP виконана Юрієм Масловським,
+--- автором його першої імплементації для NYNJA.
 
 CHAT-L2 DEFINITIONS IMPLICIT TAGS ::=
 BEGIN
@@ -172,10 +174,8 @@ BEGIN
        id OCTET STRING,
        vsn Version,
        session OCTET STRING,
-
        queryType QueryType,
-
-       refId [0] OCTET STRING OPTIONAL, -- request correlation id
+       ref [0] OCTET STRING OPTIONAL, -- request correlation id
        feed [1] MessageFeed OPTIONAL,
        target [2] OCTET STRING OPTIONAL, -- optional routing hint; domain target belongs in payload
        payload [3] QueryPayload OPTIONAL, -- typed query family payload

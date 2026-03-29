@@ -134,8 +134,10 @@ MessageType ::= ENUMERATED { normal(0), sys(1),
                         <h5>2.2 Message Feed</h5>
 
                         <pre class="code-snippet">
-MessageFeed ::= CHOICE { private [1] Privatebox,
-   chan [2] Streambox, mailbox [3] Mailbox,
+MessageFeed ::= CHOICE {
+   private [1] Privatebox,
+   chan [2] Streambox,
+   mailbox [3] Mailbox,
    group [4] Groupbox }</pre>
                         <ul>
                             <li><b>private</b>: Single-user private delivery.</li>
@@ -301,13 +303,13 @@ Query ::= SEQUENCE {
    vsn Version,
    session OCTET STRING,
    queryType QueryType,
-   refId [0] OCTET STRING OPTIONAL,
+   ref [0] OCTET STRING OPTIONAL,
    feed [1] MessageFeed OPTIONAL,
    target [2] OCTET STRING OPTIONAL,
    payload [3] QueryPayload OPTIONAL,
    code [4] INTEGER OPTIONAL, ... }</pre>
                             <ul>
-                                <li><b>refId</b>: Request correlation ID.</li>
+                                <li><b>ref</b>: Request correlation ID.</li>
                                 <li><b>feed</b>: Routing context/channel.</li>
                                 <li><b>target</b>: Hints for specific controllers.</li>
                                 <li><b>payload</b>: Extension envelope for data.</li>
@@ -345,7 +347,11 @@ SubscriptionQuery ::= SEQUENCE {
 SubscriptionAnswer ::= SEQUENCE {
    item [0] Subscription OPTIONAL,
    items [1] SEQUENCE OF subscription
-      Subscription OPTIONAL, ... }</pre>
+      Subscription OPTIONAL, ... }
+
+SubscriptionCore ::= CHOICE {
+   request [1] SubscriptionQuery,
+   result  [2] SubscriptionAnswer } </pre>
                         </div>
 
                         <div>
@@ -359,9 +365,15 @@ PresenceQuery ::= SEQUENCE {
 
 PresenceAnswer ::= SEQUENCE {
    item [0] PresenceItem OPTIONAL,
-   items [1] SEQUENCE OF item PresenceItem OPTIONAL,
-   ... }
+   items [1] SEQUENCE OF item
+      PresenceItem OPTIONAL, ... }
 
+PresenceCore ::= CHOICE {
+   request [1] PresenceQuery,
+   result  [2] PresenceAnswer }
+</pre>
+
+                            <pre class="code-snippet">
 Person ::= SEQUENCE {
    id OCTET STRING,
    nickname OCTET STRING,
@@ -382,6 +394,12 @@ PersonAnswer ::= SEQUENCE {
    items [1] SEQUENCE OF item PersonItem OPTIONAL,
    ... }
 
+PersonCore ::= CHOICE {
+   request [1] PersonQuery,
+   result  [2] PersonAnswer }
+</pre>
+
+                            <pre class="code-snippet">
 Roster ::= SEQUENCE {
    id OCTET STRING,
    vsn Version,
@@ -400,15 +418,16 @@ RosterQuery ::= SEQUENCE {
 RosterAnswer ::= SEQUENCE {
    item [0] RosterItem OPTIONAL,
    items [1] SEQUENCE OF item RosterItem OPTIONAL,
-   ... }</pre>
+   ... }
+
+RosterCore ::= CHOICE {
+   request [1] RosterQuery,
+   result  [2] RosterAnswer } </pre>
                         </div>
 
                     </div>
                     <!-- Right Column -->
                     <div class="grid-col">
-
-
-
 
                         <div>
                             <h4>7 Member & Conference Extensions</h4>
@@ -448,8 +467,7 @@ ConferenceAnswer ::= SEQUENCE {
 
 ConferenceExtension ::= CHOICE {
    request [1] ConferenceQuery,
-   result  [2] ConferenceAnswer }
-</pre>
+   result  [2] ConferenceAnswer }</pre>
                         </div>
 
                         <div>
