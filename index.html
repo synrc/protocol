@@ -391,8 +391,8 @@ Person ::= SEQUENCE {
    phone OCTET STRING,
    presence Presence,
    status PersonStatus,
-   settings [0] SEQUENCE OF feature Feature OPTIONAL,
-   ... }
+   settings [0] SEQUENCE OF
+     feature Feature OPTIONAL, ... }
 
 PersonQuery ::= SEQUENCE {
    op PersonOp,
@@ -401,8 +401,8 @@ PersonQuery ::= SEQUENCE {
 
 PersonAnswer ::= SEQUENCE {
    item [0] PersonItem OPTIONAL,
-   items [1] SEQUENCE OF item PersonItem OPTIONAL,
-   ... }
+   items [1] SEQUENCE OF
+     item PersonItem OPTIONAL, ... }
 
 PersonCore ::= CHOICE {
    request [1] PersonQuery,
@@ -427,8 +427,8 @@ RosterQuery ::= SEQUENCE {
 
 RosterAnswer ::= SEQUENCE {
    item [0] RosterItem OPTIONAL,
-   items [1] SEQUENCE OF item RosterItem OPTIONAL,
-   ... }
+   items [1] SEQUENCE OF
+     item RosterItem OPTIONAL, ... }
 
 RosterCore ::= CHOICE {
    request [1] RosterQuery,
@@ -514,15 +514,18 @@ Inbox ::= SEQUENCE {
 InboxOp ::= ENUMERATED { get(1), erase(2), ... }
 
 InboxQuery ::= SEQUENCE {
-   op InboxOp, feed [0] MessageFeed OPTIONAL, ... }
+   op InboxOp,
+   feed [0] MessageFeed OPTIONAL, ... }
 
 InboxItem ::= SEQUENCE { message Message }
 
 InboxAnswer ::= SEQUENCE {
-   items [0] SEQUENCE OF item InboxItem OPTIONAL, ... }
+   items [0] SEQUENCE OF
+     item InboxItem OPTIONAL, ... }
 
 InboxExtension ::= CHOICE {
-   request [1] InboxQuery, result [2] InboxAnswer }</pre>
+   request [1] InboxQuery,
+   result [2] InboxAnswer }</pre>
                         </div>
 
                         <div>
