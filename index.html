@@ -325,7 +325,7 @@ Query ::= SEQUENCE {
                                 <li><b>payload</b>: Extension envelope for data.</li>
                                 <li><b>code</b>: Completion status code.</li>
                             </ul>
-                            <h5>4.3 Query Core & Extensions</h5>
+                            <h5>4.3 Query Cores & Extensions</h5>
                             <pre class="code-snippet">
 QueryPayload ::= CHOICE {
    subscription [1] SubscriptionCore,
@@ -343,7 +343,7 @@ QueryPayload ::= CHOICE {
                         </div>
 
                         <div>
-                            <h4>5 Subscription Core</h4>
+                            <h4>5 Subscription Query Core</h4>
                             <p>Fact of connection between actors and targets.</p>
                             <pre class="code-snippet">
 Subscription ::= SEQUENCE {
@@ -365,7 +365,7 @@ SubscriptionCore ::= CHOICE {
                         </div>
 
                         <div>
-                            <h4>6 Roster, Presence & Person Core</h4>
+                            <h4>6 Roster, Presence & Person Cores</h4>
                             <p>Synchronized contact lists and detailed profile information.</p>
                             <pre class="code-snippet">
 PresenceQuery ::= SEQUENCE {
