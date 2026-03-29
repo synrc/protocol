@@ -197,7 +197,7 @@ Message ::= SEQUENCE {
                         <h4>3 Event</h4>
                         <p>Event is an abstraction for server-directed push messages.
                            <b>v1</b>: Event is being sent directly from device to device over UDP for Message Acknowledgments.
-                           <b>v2</b>: Event is controlled by server.</p>
+                           <b>v2</b>: Event is controlled by server (mirrors XEP-0022).</p>
                         <h5>3.1 Event</h5>
                         <p>In ASN.1 BUDDHA Core there could be only Message or Presence Events.</p>
                         <pre class="code-snippet">
@@ -217,6 +217,7 @@ EventPayload ::= CHOICE {
    message   [1] MessageEvent,
    presence  [2] PresenceEvent, ... }</pre>
                         <h5>3.2 Message Event Type</h5>
+                        <p>Message Event Type mirrors XEP-0184.</p>
                         <pre class="code-snippet">
 MessageEventType ::= ENUMERATED { received(1),
    delivered(2), read(3), edited(4), deleted(5),
