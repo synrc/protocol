@@ -219,7 +219,8 @@ EventPayload ::= CHOICE {
    message   [1] MessageEvent,
    presence  [2] PresenceEvent, ... }</pre>
                         <h5>3.2 Message Event Type</h5>
-                        <p>Message Event Type covers XEP-0184, XEP-0425.</p>
+                        <p>Message Event Type covers XEP-0184 (Message Delivery Receipts),
+                           XEP-0425 (Message Retraction), XEP-0308 (Last Message Correction).</p>
                         <pre class="code-snippet">
 MessageEventType ::= ENUMERATED { received(1),
    delivered(2), read(3), edited(4), deleted(5),
@@ -248,6 +249,7 @@ MessageEvent ::= SEQUENCE {
                         </ul>
 
                         <h5>3.4 Presence Event Type</h5>
+                        <p>Presence Event Type covers RFC 3921 (Presence), XEP-0085 (Chat State Notifications).</p>
                         <pre class="code-snippet">
 PresenceEventType ::= ENUMERATED { online(1),
    offline(2), typing(3), ... }</pre>
@@ -303,6 +305,8 @@ QueryType ::= ENUMERATED { get(1), set(2),
                                 <li><b>error</b>: Operation failure report.</li>
                             </ul>
                             <h5>4.2 Query</h5>
+                            <p>Query stanzas covers XEP-0004 (Data Forms), XEP-0030 (Service Discovery) as
+                               Store and Process Extenstions.</p>
                             <pre class="code-snippet">
 Query ::= SEQUENCE {
    id OCTET STRING,
@@ -496,7 +500,7 @@ ModerationExtension ::= CHOICE {
 
                         <div>
                             <h4>9 Inbox Entension</h4>
-                            <p>Folder queues management for historical message retrieval.</p>
+                            <p>Folder queues management for historical message retrieval. Inbox Extension covers XEP-0313.</p>
                             <pre class="code-snippet">
 InboxMethod ::= ENUMERATED { get(1), erase(2), ...}
 
